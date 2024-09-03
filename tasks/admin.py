@@ -28,6 +28,7 @@ class TaskAdmin(admin.ModelAdmin):
     search_fields = ['username', 'user__first_name',
                      'user__last_name', 'title', 'status']
     ordering = ['status', '-created']
+    list_filter = ['title', 'department', 'status', 'created']
 
     raw_id_fields = ['user']
 
