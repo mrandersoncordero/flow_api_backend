@@ -10,5 +10,6 @@ urlpatterns = [
     # Django Admin
     path('admin/', admin.site.urls),
 
-    path('', include('tasks.urls', namespace='tasks'))
+    path('', include('tasks.urls', namespace='tasks')),
+    path('', include('users.urls', namespace='users')),
 ]
