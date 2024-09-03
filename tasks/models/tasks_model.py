@@ -2,9 +2,41 @@
 
 # Django
 from django.db import models
+from django.conf import settings
+from django.utils.timezone import datetime
 
 # Utilities
 from flow.utils import FlowModels
 
+# Models
+from .department_model import Department
+
+
+class TaskStatus(models.Model):
+    """TaskStatus model."""
+    name = models.CharField(max_length=50, unique=True, verbose_name='nombre')
+
+    def __str__(self) -> str:
+        return f"{self.name}"
+
+
 class Task(FlowModels, models.Model):
     """Tasks model."""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.PROTECT)
+    title = models.CharField(max_length=200,
+                             unique=True,
+                             verbose_name='titulo')
+    description = models.TextField(max_length=500,
+                                   null=True,
+                                   blank=True,
+                                   verbose_name='descripcion')
+    department = models.ForeignKey(Department,
+                                   on_delete=models.PROTECT)
+    status = models.ForeignKey(TaskStatus,
+                               on_delete=models.SET_DEFAULT,
+                               default=1)
+    hours = models.TimeField(verbose_name='tiempo')
+
+    def __str__(self) -> str:
+        return f'{self.title} - by {self.user.username}'
