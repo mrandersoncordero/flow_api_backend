@@ -53,7 +53,8 @@ THIRPARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    'users.apps.UsersConfig'
+    'users.apps.UsersConfig',
+    'tasks.apps.TasksConfig'
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRPARTY_APPS + LOCAL_APPS
