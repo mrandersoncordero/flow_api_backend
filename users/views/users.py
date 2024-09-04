@@ -37,5 +37,5 @@ class UserSingUpAPIView(APIView):
         serializer = UserSingUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        data = UserModelSerializer(data).data
+        data = UserModelSerializer(user).data
         return Response(data, status=status.HTTP_201_CREATED)

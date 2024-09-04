@@ -22,7 +22,7 @@ class UserModelSerializer(serializers.ModelSerializer):
         fields = ("username", "first_name", "last_name", "email")
 
 
-class UserSingUpSerializer(serializers.ModelSerializer):
+class UserSingUpSerializer(serializers.Serializer):
     """User sign up model serializer.
 
     Handle sign up data validation and user creation."""
