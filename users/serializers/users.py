@@ -32,7 +32,9 @@ class UserSingUpSerializer(serializers.Serializer):
     )
 
     username = serializers.CharField(
-        min_length=4, max_length=20, validators=[UniqueValidator]
+        min_length=4,
+        max_length=20,
+        validators=[UniqueValidator(queryset=User.objects.all())],
     )
     # Password
     password = serializers.CharField(min_length=8, max_length=64)
@@ -56,7 +58,7 @@ class UserSingUpSerializer(serializers.Serializer):
     def create(self, data):
         """Handle user and profile creation."""
         data.pop("password_confirmation")
-        user = User.objects.create_user(**data)
+        user = User.objects.create_user(**data, is_verified=False)
         return user
 
 
@@ -72,8 +74,11 @@ class UserLoginSerializer(serializers.Serializer):
     def validate(self, data):
         """Check credentials."""
         user = authenticate(username=data["email"], password=data["password"])
+
         if not user:
             raise serializers.ValidationError("Invalid credentials.")
+        if not user.is_verified:
+            raise serializers.ValidationError("Account is not active yet :(")
 
         self.context["user"] = user
         return data
