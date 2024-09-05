@@ -138,7 +138,7 @@ DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = "es-VE"
+LANGUAGE_CODE = "en-en"
 
 TIME_ZONE = "America/Caracas"
 
