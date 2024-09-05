@@ -18,6 +18,7 @@ class TaskSerializer(serializers.ModelSerializer):
             "title",
             "description",
             "department",
+            "company",
             "status",
             "hours",
             "created",
