@@ -9,7 +9,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "flow.settings")
 django.setup()
 
 # Models
-from tasks.models import Department, TaskStatus, Task
+from tasks.models import Department, TaskStatus, Task, Company
 from users.models import User
 
 
@@ -78,18 +78,39 @@ def main():
         message=["Creating TaskStatus", "TaskStatus succesfully created"],
     )
 
+    data_companies = [
+        {"name": "Nardi Industrias Barquisimeto, C.A."},
+        {"name": "Nardi Industrias Trujillo, C.A."},
+        {"name": "Transporte San Gregorio, C.A."},
+        {"name": "Direccion General de Empresas, C.A."},
+        {"name": "Distribucion & Servicios Industriales, C.A."},
+        {"name": "Procesadora de Silice, C.A."},
+        {"name": "Franar, C.A."},
+        {"name": "Branar, C.A."},
+    ]
+
+    load_data(
+        data_companies,
+        model=Company,
+        message=["Creating Company", "Company succesfully created"],
+    )
+
     data_task = []
     departments = Department.objects.all()
     task_status = TaskStatus.objects.get(pk=3)
     user = User.objects.first()
 
+    company_id = 1
+
     for department in departments:
+
         data_task.append(
             {
                 "user": user,
                 "title": f"Tarea 1 en {department.name}",
                 "description": f"Descripción de la tarea 1 en {department.name}",
                 "department": department,
+                "company": Company.objects.get(pk=company_id),
                 "status": task_status,
                 "hours": time(2, 0),  # 2 horas
             }
@@ -100,10 +121,12 @@ def main():
                 "title": f"Tarea 2 en {department.name}",
                 "description": f"Descripción de la tarea 2 en {department.name}",
                 "department": department,
+                "company": Company.objects.get(pk=company_id),
                 "status": task_status,
                 "hours": time(3, 0),  # 3 horas
             }
         )
+        company_id += 1
 
     load_data(
         data_task,
