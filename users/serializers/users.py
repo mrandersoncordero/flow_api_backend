@@ -27,7 +27,16 @@ class UserModelSerializer(serializers.ModelSerializer):
         """Meta class."""
 
         model = User
-        fields = ("username", "first_name", "last_name", "email")
+        fields = [
+            "id",
+            "first_name",
+            "last_name",
+            "username",
+            "email",
+            "is_staff",
+            "is_active",
+            "is_verified"
+        ]
 
 
 class UserSingUpSerializer(serializers.Serializer):
