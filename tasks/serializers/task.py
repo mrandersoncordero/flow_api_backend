@@ -25,14 +25,11 @@ class TaskSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["created", "modified"]
 
-    def create(self, data):
-        task = Task.objects.create(
-            user=data["user"],
-            title=data["title"],
-            description=data["description"],
-            department=data["department"],
-            status=data["status"],
-            hours=data["hours"],
-        )
 
-        return task
+class TaskStatusModelSerializer(serializers.ModelSerializer):
+    """Tasks status model serializer."""
+
+    class Meta:
+        """Meta class."""
+        model = TaskStatus
+        fields = '__all__'
