@@ -7,15 +7,21 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 # Views
-from .views import list_tasks, create_task, DepartmentViewSet
+from .views import TaskViewSet, DepartmentViewSet, TaskStatusAPIView
 
 app_name = 'tasks'
 
-router = DefaultRouter()
-router.register(r'', DepartmentViewSet, basename='department')
+router_department = DefaultRouter()
+router_department.register(r'', DepartmentViewSet, basename='department')
+
+router_task = DefaultRouter()
+router_task.register(r'', TaskViewSet, basename='tasks')
 
 urlpatterns = [
-    path('tasks/', list_tasks),
-    path('tasks/create/', create_task),
-    path('departments/', include(router.urls)),
+    path('tasks/', include(router_task.urls)),
+
+    path('status_tasks/', TaskStatusAPIView.as_view()),
+    path('status_task/<int:pk>/', TaskStatusAPIView.as_view()),
+
+    path('departments/', include(router_department.urls)),
 ]
