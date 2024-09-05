@@ -12,3 +12,4 @@ class DeparmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department
         fields = ['id', 'name', 'description', 'created', 'modified']
+        read_only_fields = ['created', 'modified']
