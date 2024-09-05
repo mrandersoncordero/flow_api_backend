@@ -53,7 +53,7 @@ def main():
 
     data_department = [
         {"name": "Service Pack", "description": ""},
-        {"name": "Infraestrucutra", "description": ""},
+        {"name": "Infraestructura", "description": ""},
         {"name": "Social Media", "description": ""},
         {"name": "Sistemas", "description": ""},
         {"name": "Desarrollo Web", "description": ""},
