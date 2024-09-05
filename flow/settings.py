@@ -48,12 +48,9 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
-THIRD_PARTY_APPS = [
-    "rest_framework",
-    "rest_framework.authtoken",
-]
+THIRD_PARTY_APPS = ["rest_framework", "rest_framework.authtoken", "anymail"]
 
-LOCAL_APPS = ["users.apps.UsersConfig", "tasks.apps.TasksConfig", "anymail"]
+LOCAL_APPS = ["users.apps.UsersConfig", "tasks.apps.TasksConfig"]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
