@@ -30,7 +30,7 @@ class Task(FlowModels, models.Model):
         max_length=500, null=True, blank=True, verbose_name="descripcion"
     )
     department = models.ForeignKey(Department, on_delete=models.PROTECT)
-    company = models.ForeignKey(Company, on_delete=models.PROTECT, default=1)
+    company = models.ForeignKey(Company, on_delete=models.PROTECT)
     status = models.ForeignKey(TaskStatus, on_delete=models.SET_NULL, null=True)
     hours = models.TimeField(verbose_name="tiempo")
 
