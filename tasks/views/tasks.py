@@ -2,6 +2,7 @@
 
 # Django
 from django.shortcuts import get_object_or_404
+from django.utils.dateparse import parse_date
 
 # Django REST Framework
 from rest_framework import viewsets
@@ -63,3 +64,28 @@ class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        """Filtrar por parametros de la URL"""
+        queryset = Task.objects.all()
+        company = self.request.query_params.get('company', None)
+        department = self.request.query_params.get('department', None)
+        date_from = self.request.query_params.get('date_from', None)
+        date_until = self.request.query_params.get('date_until', None)
+
+        if company:
+            queryset = queryset.filter(company=company)
+        if department:
+            queryset = queryset.filter(department=department)
+        
+        if date_from:
+            date_from = parse_date(date_from)
+            if date_from:
+                queryset = queryset.filter(created__gte=date_from)
+
+        if date_until:
+            date_until = parse_date(date_until)
+            if date_until:
+                queryset = queryset.filter(created__lte=date_until)
+        
+        return queryset
