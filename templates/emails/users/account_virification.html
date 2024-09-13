@@ -4,13 +4,9 @@
     Antes de que puedas comenzar a utilizar <b>Task Flow</b>, necesitamos que completes un último paso.
 </p>
 
-<form action="http://localhost/task-flow/verify_account.php" method="POST">
-    <input type="hidden" name="token" value="{{ token }}">
-    <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; font-size: 1em; border-radius: 5px;">
-        Verificar Cuenta
-    </button>
-</form>
-
+<a href="http://localhost/task-flow/verify_account.php?token={{ token }}" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; font-size: 1em; border-radius: 5px;">
+    Verificar Cuenta
+</a>
 
 <p>
     Si tienes algún problema o no solicitaste la verificación de tu cuenta, por favor contáctanos.
