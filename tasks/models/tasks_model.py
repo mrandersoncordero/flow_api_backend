@@ -32,7 +32,7 @@ class Task(FlowModels, models.Model):
     department = models.ForeignKey(Department, on_delete=models.PROTECT)
     company = models.ForeignKey(Company, on_delete=models.PROTECT)
     status = models.ForeignKey(TaskStatus, on_delete=models.SET_NULL, null=True)
-    hours = models.TimeField(verbose_name="tiempo")
+    hours = models.TimeField(verbose_name="tiempo", null=True, blank=True)
 
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
