@@ -1,7 +1,7 @@
 # load_data.py
 
 import os
-from datetime import time
+from datetime import timedelta
 import django
 
 # Configurar el entorno de Django
@@ -103,7 +103,6 @@ def main():
     company_id = 1
 
     for department in departments:
-
         data_task.append(
             {
                 "user": user,
@@ -112,7 +111,7 @@ def main():
                 "department": department,
                 "company": Company.objects.get(pk=company_id),
                 "status": task_status,
-                "hours": time(2, 0),  # 2 horas
+                "hours": timedelta(hours=2),  # 2 horas de duración
             }
         )
         data_task.append(
@@ -123,11 +122,10 @@ def main():
                 "department": department,
                 "company": Company.objects.get(pk=company_id),
                 "status": task_status,
-                "hours": time(3, 0),  # 3 horas
+                "hours": timedelta(hours=3),  # 3 horas de duración
             }
         )
         company_id += 1
-
     load_data(
         data_task,
         model=Task,
