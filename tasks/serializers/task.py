@@ -1,6 +1,7 @@
 """Task serializers."""
 
 # Django REST Framework
+from django.forms import ValidationError
 from rest_framework import serializers
 
 # Models
@@ -35,7 +36,8 @@ class TaskStatusSerializer(serializers.ModelSerializer):
         """Meta class."""
 
         model = TaskStatus
-        fields = ['name']
+        fields = ["name"]
+
 
 class TaskStatusModelSerializer(serializers.ModelSerializer):
     """Tasks status model serializer."""
@@ -46,6 +48,7 @@ class TaskStatusModelSerializer(serializers.ModelSerializer):
         model = TaskStatus
         fields = "__all__"
 
+
 class TaskSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     user_data = serializers.SerializerMethodField()
@@ -55,6 +58,8 @@ class TaskSerializer(serializers.ModelSerializer):
     company_data = serializers.SerializerMethodField()
     status = serializers.PrimaryKeyRelatedField(queryset=TaskStatus.objects.all())
     status_data = serializers.SerializerMethodField()
+
+    hours_display = serializers.SerializerMethodField()
 
     class Meta:
         model = Task
@@ -70,7 +75,8 @@ class TaskSerializer(serializers.ModelSerializer):
             "company_data",
             "status",
             "status_data",
-            "hours",
+            "hours",  # Duración en el formato timedelta original
+            "hours_display",  # Duración formateada como HH:MM
             "created",
             "start_date",
             "end_date",
@@ -98,3 +104,15 @@ class TaskSerializer(serializers.ModelSerializer):
         status = obj.status  # Asegúrate de que estás accediendo al campo correcto
         status_serializer = TaskStatusSerializer(status)
         return status_serializer.data if status else None
+
+    def get_hours_display(self, obj):
+        if obj.hours:
+            total_seconds = int(obj.hours.total_seconds())
+            hours = total_seconds // 3600
+            minutes = (total_seconds % 3600) // 60
+            return f"{hours} horas {minutes} minutos"
+        return None
+
+    def clean(self):
+        if isinstance(self.hours, str):
+            raise ValidationError("El campo hours no puede ser una cadena de texto.")
