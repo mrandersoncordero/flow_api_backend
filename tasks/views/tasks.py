@@ -1,5 +1,7 @@
 """Tasks views."""
 
+from datetime import timedelta
+
 # Django
 from django.shortcuts import get_object_or_404
 from django.utils.dateparse import parse_date
@@ -66,18 +68,18 @@ class TaskViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        """Filtrar por parametros de la URL"""
+        """Filtrar por parámetros de la URL"""
         queryset = Task.objects.all()
-        company = self.request.query_params.get('company', None)
-        department = self.request.query_params.get('department', None)
-        date_from = self.request.query_params.get('date_from', None)
-        date_until = self.request.query_params.get('date_until', None)
+        company = self.request.query_params.get("company", None)
+        department = self.request.query_params.get("department", None)
+        date_from = self.request.query_params.get("date_from", None)
+        date_until = self.request.query_params.get("date_until", None)
 
         if company:
             queryset = queryset.filter(company=company)
         if department:
             queryset = queryset.filter(department=department)
-        
+
         if date_from:
             date_from = parse_date(date_from)
             if date_from:
@@ -87,5 +89,49 @@ class TaskViewSet(viewsets.ModelViewSet):
             date_until = parse_date(date_until)
             if date_until:
                 queryset = queryset.filter(created__lte=date_until)
-        
+
         return queryset
+
+    def perform_create(self, serializer):
+        # Obtener el valor del campo 'hours' en formato 'HH:MM'
+        time_str = self.request.data.get("hours")  # Ejemplo: '00:30'
+
+        if time_str:
+            # Dividir la cadena de tiempo en horas y minutos
+            hours, minutes = map(int, time_str.split(":"))
+
+            # Crear un objeto timedelta con las horas y minutos
+            duration = timedelta(hours=hours, minutes=minutes)
+
+            # Actualiza validated_data para incluir 'hours' correctamente
+            validated_data = serializer.validated_data.copy()  # Hacer una copia
+            validated_data["hours"] = (
+                duration  # Establecer la duración en validated_data
+            )
+
+            serializer.save(**validated_data)  # Pasar la validación sin repetir 'hours'
+        else:
+            # Si no se proporciona 'hours', aún guarda el serializer
+            serializer.save(**serializer.validated_data)
+
+    def perform_update(self, serializer):
+        # Obtener el valor del campo 'hours' en formato 'HH:MM'
+        time_str = self.request.data.get("hours")  # Ejemplo: '00:30'
+
+        if time_str:
+            # Dividir la cadena de tiempo en horas y minutos
+            hours, minutes = map(int, time_str.split(":"))
+
+            # Crear un objeto timedelta con las horas y minutos
+            duration = timedelta(hours=hours, minutes=minutes)
+
+            # Actualiza validated_data para incluir 'hours' correctamente
+            validated_data = serializer.validated_data.copy()  # Hacer una copia
+            validated_data["hours"] = (
+                duration  # Establecer la duración en validated_data
+            )
+
+            serializer.save(**validated_data)  # Pasar la validación sin repetir 'hours'
+        else:
+            # Si no se proporciona 'hours', aún guarda el serializer
+            serializer.save(**serializer.validated_data)
