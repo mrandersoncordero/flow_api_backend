@@ -25,7 +25,7 @@ class Task(FlowModels, models.Model):
     """Tasks model."""
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
-    title = models.CharField(max_length=200, unique=True, verbose_name="titulo")
+    title = models.CharField(max_length=200, verbose_name="titulo")
     description = models.TextField(
         max_length=1000, null=True, blank=True, verbose_name="descripcion"
     )
