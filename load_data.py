@@ -1,8 +1,7 @@
-# load_data.py
-
 import os
 from datetime import timedelta
 import django
+from django.db import IntegrityError
 
 # Configurar el entorno de Django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "flow.settings")
@@ -13,12 +12,15 @@ from tasks.models import Department, TaskStatus, Task, Company
 from users.models import User
 
 
-def load_data(data, model, message=["Creating", "Created Succesfully"]):
+def load_data(
+    data, model, unique_fields=None, message=["Creating", "Created Successfully"]
+):
     """Funcion para insertar datos en una tabla.
 
-    Parametros posicionales
+    Parametros posicionales:
     data -- list una variable que contiene una lista de diccionarios.
     model -- obj modelo al que se insertaran los datos.
+    unique_fields -- list lista de campos que deben ser únicos.
     message -- list mensajes
     """
 
@@ -27,24 +29,43 @@ def load_data(data, model, message=["Creating", "Created Succesfully"]):
 
     print("*" * 5, f"{message[0].title()}", "*" * 5)
     for d in data:
-        obj = model(**d)
-        print("-", obj)
-        obj.save()
+        try:
+            if unique_fields:
+                # Verificar si el registro ya existe basado en campos únicos
+                filter_kwargs = {
+                    field: d[field] for field in unique_fields if field in d
+                }
+                if model.objects.filter(**filter_kwargs).exists():
+                    print(
+                        f"- {model.__name__} with {filter_kwargs} already exists. Skipping..."
+                    )
+                    continue
+
+            obj = model(**d)
+            obj.save()
+            print(f"- {obj} created successfully.")
+
+        except IntegrityError as e:
+            print(f"Error: {e} - {d}")
+        except Exception as e:
+            print(f"Unexpected error: {e} - {d}")
+
     print("*" * 5, f"{message[1]}", "*" * 5, end="\n\n")
 
 
 def create_superuser():
-    superuser = User.objects.create_superuser(
-        username="admin",
-        first_name="Administrator",
-        last_name="",
-        password="root",
-        email="admin@email.com",
-    )
-    # group = Group.objects.get(name='admins')  # Obtén la instancia del grupo
-    # superuser.groups.add(group)
-    superuser.save()
-    print("\nSuccessfully created superuser.")
+    if not User.objects.filter(username="admin").exists():
+        superuser = User.objects.create_superuser(
+            username="admin",
+            first_name="Administrator",
+            last_name="",
+            password="root",
+            email="admin@email.com",
+        )
+        superuser.save()
+        print("\nSuccessfully created superuser.")
+    else:
+        print("Superuser already exists. Skipping creation.")
 
 
 def main():
@@ -63,6 +84,7 @@ def main():
     load_data(
         data_department,
         model=Department,
+        unique_fields=["name"],
         message=["Creating department", "Department successfully created"],
     )
 
@@ -75,7 +97,8 @@ def main():
     load_data(
         data_taskstatus,
         model=TaskStatus,
-        message=["Creating TaskStatus", "TaskStatus succesfully created"],
+        unique_fields=["name"],
+        message=["Creating TaskStatus", "TaskStatus successfully created"],
     )
 
     data_companies = [
@@ -92,7 +115,8 @@ def main():
     load_data(
         data_companies,
         model=Company,
-        message=["Creating Company", "Company succesfully created"],
+        unique_fields=["name"],
+        message=["Creating Company", "Company successfully created"],
     )
 
     data_task = []
@@ -111,7 +135,7 @@ def main():
                 "department": department,
                 "company": Company.objects.get(pk=company_id),
                 "status": task_status,
-                "hours": timedelta(hours=2),  # 2 horas de duración
+                "hours": timedelta(hours=2),
             }
         )
         data_task.append(
@@ -122,7 +146,7 @@ def main():
                 "department": department,
                 "company": Company.objects.get(pk=company_id),
                 "status": task_status,
-                "hours": timedelta(hours=3),  # 3 horas de duración
+                "hours": timedelta(hours=3),
             }
         )
         company_id += 1
