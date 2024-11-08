@@ -91,7 +91,11 @@ WSGI_APPLICATION = "flow.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {"default": dj_database_url.parse(os.getenv("DATABASE_URL"))}
+DATABASES = {
+    "default": dj_database_url.parse(
+        "postgresql://postgres:ZdzmFoYcFPPUoVxACzYHTrJFDAePxfUh@autorack.proxy.rlwy.net:28860/railway"
+    )
+}
 
 
 # Password validation
@@ -180,3 +184,5 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 10,
 }
+
+CSRF_TRUSTED_ORIGINS = ["https://api-task-flow-production.up.railway.app/"]
