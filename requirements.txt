@@ -3,6 +3,7 @@ asttokens==2.4.1
 certifi==2024.8.30
 charset-normalizer==3.3.2
 decorator==5.1.1
+dj-database-url==2.3.0
 Django==5.1
 django-anymail==11.1
 djangorestframework==3.15.2
