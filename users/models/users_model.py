@@ -6,10 +6,10 @@ from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 
 # Utilities
-from flow.utils import FlowModels
+from flow.utils.base_model import BaseModel
 
 
-class User(FlowModels, AbstractUser):
+class User(BaseModel, AbstractUser):
     """User model.
 
     Extend form Django's Abstract User, change the username field
