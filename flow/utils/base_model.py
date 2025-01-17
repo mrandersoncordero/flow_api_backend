@@ -34,4 +34,3 @@ class BaseModel(models.Model):
         """Meta options."""
         abstract = True
         ordering = ["-created"]
-        indexes = [models.Index(fields=["-created"])]
