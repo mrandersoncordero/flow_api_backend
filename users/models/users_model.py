@@ -3,7 +3,7 @@
 # Django
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.utils import timezone
+from django.db.models.functions import Now
 
 # Utilities
 from flow.utils.base_model import BaseModel
@@ -31,8 +31,14 @@ class User(BaseModel, AbstractUser):
         help_text="Set to true when the user have verified its email address. ",
     )
     last_login = models.DateTimeField(
-        verbose_name="Último inicio de sesión", default=timezone.now
+        verbose_name="Último inicio de sesión", default=Now()
     )
+    
+    deleted = models.DateTimeField(verbose_name="deleted", default=None)
+
+    def onDelete(self):
+        self.deleted = Now()
+        self.is_active = False
 
     def __str__(self):
         """Return username"""
@@ -41,3 +47,6 @@ class User(BaseModel, AbstractUser):
     def get_username(self) -> str:
         """Return username."""
         return self.username
+
+    class Meta:
+        indexes = [models.Index(fields=["-created"])]
