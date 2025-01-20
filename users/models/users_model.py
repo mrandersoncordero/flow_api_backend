@@ -50,3 +50,4 @@ class User(BaseModel, AbstractUser):
 
     class Meta:
         indexes = [models.Index(fields=["-created"])]
+        db_table = 'users'

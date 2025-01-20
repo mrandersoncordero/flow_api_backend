@@ -29,3 +29,4 @@ class HumanResource(MainModel, models.Model):
 
     class Meta:
         indexes = [models.Index(fields=["-created"])]
+        db_table = 'human_resources'
