@@ -54,6 +54,7 @@ THIRD_PARTY_APPS = ["rest_framework", "rest_framework.authtoken", "anymail"]
 
 LOCAL_APPS = [
     "users.apps.UsersConfig",
+    "commissions.apps.CommissionsConfig",
     "petitions.apps.PetitionsConfig"
     # "tasks.apps.TasksConfig"
 ]
@@ -96,9 +97,10 @@ WSGI_APPLICATION = "flow.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    "default": dj_database_url.parse(
-        "postgresql://postgres:ZdzmFoYcFPPUoVxACzYHTrJFDAePxfUh@autorack.proxy.rlwy.net:28860/railway"
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 
