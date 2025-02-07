@@ -8,7 +8,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "flow.settings")
 django.setup()
 
 # Models
-from tasks.models import Department, TaskStatus, Task, Company
+from petitions.models import Department
 from users.models import User
 
 
@@ -73,12 +73,12 @@ def main():
     create_superuser()
 
     data_department = [
-        {"name": "Service Pack", "description": ""},
-        {"name": "Infraestructura", "description": ""},
-        {"name": "Social Media", "description": ""},
-        {"name": "Sistemas", "description": ""},
-        {"name": "Desarrollo Web", "description": ""},
-        {"name": "Centro de Servicio EPSON", "description": ""},
+        {"name": "Service Pack"},
+        {"name": "Infraestructura"},
+        {"name": "Social Media"},
+        {"name": "Sistemas"},
+        {"name": "Desarrollo Web"},
+        {"name": "Centro de Servicio EPSON"},
     ]
 
     load_data(
@@ -88,73 +88,73 @@ def main():
         message=["Creating department", "Department successfully created"],
     )
 
-    data_taskstatus = [
-        {"name": "Completado"},
-        {"name": "En Progreso"},
-        {"name": "No Iniciado"},
-    ]
+    # data_taskstatus = [
+    #     {"name": "Completado"},
+    #     {"name": "En Progreso"},
+    #     {"name": "No Iniciado"},
+    # ]
 
-    load_data(
-        data_taskstatus,
-        model=TaskStatus,
-        unique_fields=["name"],
-        message=["Creating TaskStatus", "TaskStatus successfully created"],
-    )
+    # load_data(
+    #     data_taskstatus,
+    #     model=TaskStatus,
+    #     unique_fields=["name"],
+    #     message=["Creating TaskStatus", "TaskStatus successfully created"],
+    # )
 
-    data_companies = [
-        {"name": "Nardi Industrias Barquisimeto, C.A."},
-        {"name": "Nardi Industrias Trujillo, C.A."},
-        {"name": "Transporte San Gregorio, C.A."},
-        {"name": "Direccion General de Empresas, C.A."},
-        {"name": "Distribucion & Servicios Industriales, C.A."},
-        {"name": "Procesadora de Silice, C.A."},
-        {"name": "Franar, C.A."},
-        {"name": "Branar, C.A."},
-    ]
+    # data_companies = [
+    #     {"name": "Nardi Industrias Barquisimeto, C.A."},
+    #     {"name": "Nardi Industrias Trujillo, C.A."},
+    #     {"name": "Transporte San Gregorio, C.A."},
+    #     {"name": "Direccion General de Empresas, C.A."},
+    #     {"name": "Distribucion & Servicios Industriales, C.A."},
+    #     {"name": "Procesadora de Silice, C.A."},
+    #     {"name": "Franar, C.A."},
+    #     {"name": "Branar, C.A."},
+    # ]
 
-    load_data(
-        data_companies,
-        model=Company,
-        unique_fields=["name"],
-        message=["Creating Company", "Company successfully created"],
-    )
+    # load_data(
+    #     data_companies,
+    #     model=Company,
+    #     unique_fields=["name"],
+    #     message=["Creating Company", "Company successfully created"],
+    # )
 
-    data_task = []
-    departments = Department.objects.all()
-    task_status = TaskStatus.objects.get(pk=3)
-    user = User.objects.first()
+    # data_task = []
+    # departments = Department.objects.all()
+    # task_status = TaskStatus.objects.get(pk=3)
+    # user = User.objects.first()
 
-    company_id = 1
+    # company_id = 1
 
-    for department in departments:
-        data_task.append(
-            {
-                "user": user,
-                "title": f"Tarea 1 en {department.name}",
-                "description": f"Descripción de la tarea 1 en {department.name}",
-                "department": department,
-                "company": Company.objects.get(pk=company_id),
-                "status": task_status,
-                "hours": timedelta(hours=2),
-            }
-        )
-        data_task.append(
-            {
-                "user": user,
-                "title": f"Tarea 2 en {department.name}",
-                "description": f"Descripción de la tarea 2 en {department.name}",
-                "department": department,
-                "company": Company.objects.get(pk=company_id),
-                "status": task_status,
-                "hours": timedelta(hours=3),
-            }
-        )
-        company_id += 1
-    load_data(
-        data_task,
-        model=Task,
-        message=["Creating Task", "Tasks successfully created"],
-    )
+    # for department in departments:
+    #     data_task.append(
+    #         {
+    #             "user": user,
+    #             "title": f"Tarea 1 en {department.name}",
+    #             "description": f"Descripción de la tarea 1 en {department.name}",
+    #             "department": department,
+    #             "company": Company.objects.get(pk=company_id),
+    #             "status": task_status,
+    #             "hours": timedelta(hours=2),
+    #         }
+    #     )
+    #     data_task.append(
+    #         {
+    #             "user": user,
+    #             "title": f"Tarea 2 en {department.name}",
+    #             "description": f"Descripción de la tarea 2 en {department.name}",
+    #             "department": department,
+    #             "company": Company.objects.get(pk=company_id),
+    #             "status": task_status,
+    #             "hours": timedelta(hours=3),
+    #         }
+    #     )
+    #     company_id += 1
+    # load_data(
+    #     data_task,
+    #     model=Task,
+    #     message=["Creating Task", "Tasks successfully created"],
+    # )
 
 
 if __name__ == "__main__":

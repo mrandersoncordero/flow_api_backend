@@ -6,9 +6,9 @@ from django.contrib.auth.models import AbstractUser
 from django.db.models.functions import Now
 
 # Utilities
-from utils.main_model import MainModel
+from utils.base_model import BaseModel
 
-class User(MainModel, AbstractUser):
+class User(BaseModel, AbstractUser):
     """User model.
 
     Extend form Django's Abstract User, change the username field
@@ -39,8 +39,7 @@ class User(MainModel, AbstractUser):
 
     class Meta:
         indexes = [
-            models.Index(fields=["-created"]),
-            models.Index(fields=["active"]),
+            models.Index(fields=["-created"])
         ]
         db_table = 'users'
 

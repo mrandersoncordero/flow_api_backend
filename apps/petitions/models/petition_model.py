@@ -13,11 +13,9 @@ from users.models.human_resources_model import HumanResource
 
 
 class Petition(MainModel, models.Model):
-    """Petitions model.
+    """Modelo de Petición.
 
-    Args:
-        MainModel (_type_): _description_
-        models (_type_): _description_
+    Una petición puede tener varias comisiones asociadas.
     """
 
     class Priority(models.TextChoices):
@@ -26,7 +24,7 @@ class Petition(MainModel, models.Model):
         HIGH = "HG", "HIGH"
         URGENT = "UG", "URGENT"
         SUPER_URGENT = "SU", "SUPER_URGENT"
-        STANDART = "ST", "STANDART"
+        STANDARD = "ST", "STANDARD"
 
     class StatusApproval(models.TextChoices):
         WAITING = "WT", "WAITING"
@@ -34,27 +32,22 @@ class Petition(MainModel, models.Model):
         NOT_APPROVED = "NP", "NOT_APPROVED"
 
     parent_petition = models.ForeignKey(
-        "self",  # Relación consigo mismo
+        "self",
         on_delete=models.SET_NULL,
-        null=True,  # Permitir que sea nulo si no tiene padre
-        blank=True,  # Hacerlo opcional
-        related_name="child_petitions",  # Relación inversa para acceder a peticiones hijas
+        null=True,
+        blank=True,
+        related_name="child_petitions",
         verbose_name="parent petition",
     )
     title = models.CharField(verbose_name="title", max_length=120)
     description = models.TextField(verbose_name="description")
-    priority = models.CharField(max_length=2, choices=Priority, default=Priority.LOW)
+    priority = models.CharField(
+        max_length=2, choices=Priority, default=Priority.LOW
+    )
     status_approval = models.CharField(
         max_length=2, choices=StatusApproval, default=StatusApproval.WAITING
     )
 
-    commission = models.ForeignKey(
-        Commission,
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        related_name="committees_on_petitions",
-    )
     department = models.ForeignKey(
         Department,
         on_delete=models.PROTECT,
@@ -66,20 +59,20 @@ class Petition(MainModel, models.Model):
         """Validaciones personalizadas para Petitions."""
         from django.core.exceptions import ValidationError
 
-        # Si es una petición principal, no puede tener comisión
-        if self.parent_petition is None and self.commission is not None:
+        # Si es una petición principal, no puede tener comisiones
+        if self.parent_petition is None and self.commissions.exists():
             raise ValidationError(
-                "Una petición principal no puede tener una comisión asignada."
+                "Una petición principal no puede tener comisiones asignadas."
             )
 
-        # Si es una petición hija, debe tener una petición principal y una comisión
-        if self.parent_petition is not None and self.commission is None:
+        # Si es una petición hija, debe tener una petición principal y al menos una comisión
+        if self.parent_petition is not None and not self.commissions.exists():
             raise ValidationError(
-                "Las peticiones hijas deben estar asociadas a una comisión."
+                "Las peticiones hijas deben estar asociadas a al menos una comisión."
             )
 
     def __str__(self):
         return f"{self.title} by {self.human_resource}"
-    
+
     class Meta:
-        db_table = 'petitions'
+        db_table = "petitions"
