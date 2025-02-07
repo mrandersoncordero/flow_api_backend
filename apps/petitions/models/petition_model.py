@@ -4,7 +4,7 @@
 from django.db import models
 
 # Utilities
-from flow.utils.main_model import MainModel
+from utils.main_model import MainModel
 
 # Models
 from .department_model import Department

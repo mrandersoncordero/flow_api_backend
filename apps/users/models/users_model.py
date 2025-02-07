@@ -6,10 +6,9 @@ from django.contrib.auth.models import AbstractUser
 from django.db.models.functions import Now
 
 # Utilities
-from flow.utils.base_model import BaseModel
+from utils.main_model import MainModel
 
-
-class User(BaseModel, AbstractUser):
+class User(MainModel, AbstractUser):
     """User model.
 
     Extend form Django's Abstract User, change the username field
@@ -33,21 +32,18 @@ class User(BaseModel, AbstractUser):
     last_login = models.DateTimeField(
         verbose_name="Último inicio de sesión", default=Now()
     )
-    
-    deleted = models.DateTimeField(verbose_name="deleted", default=None)
-
-    def onDelete(self):
-        self.deleted = Now()
-        self.is_active = False
-
-    def __str__(self):
-        """Return username"""
-        return str(self.username)
 
     def get_username(self) -> str:
         """Return username."""
         return self.username
 
     class Meta:
-        indexes = [models.Index(fields=["-created"])]
+        indexes = [
+            models.Index(fields=["-created"]),
+            models.Index(fields=["active"]),
+        ]
         db_table = 'users'
+
+    def __str__(self):
+        """Return username"""
+        return str(self.username)

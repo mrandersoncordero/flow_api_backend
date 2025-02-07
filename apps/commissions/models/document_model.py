@@ -4,7 +4,7 @@
 from django.db import models
 
 # Utilities
-from flow.utils.main_model import MainModel
+from utils.main_model import MainModel
 
 # Models
 from .commission_model import Commission
@@ -25,3 +25,6 @@ class Document(MainModel, models.Model):
     
     class Meta:
         db_table = "documents"
+        indexes = [
+            models.Index(fields=['id', 'active']),
+        ]

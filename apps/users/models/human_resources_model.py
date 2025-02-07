@@ -5,7 +5,7 @@ from django.db import models
 from django.conf import settings
 
 # Utilities
-from flow.utils.main_model import MainModel
+from utils.main_model import MainModel
 
 
 class HumanResource(MainModel, models.Model):
@@ -17,7 +17,7 @@ class HumanResource(MainModel, models.Model):
     """
 
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, to_field="id"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
     )
     biography = models.TextField(blank=True)
     phone_number = models.CharField(max_length=20, blank=True)
@@ -28,5 +28,8 @@ class HumanResource(MainModel, models.Model):
         return f"{self.user.first_name} {self.user.last_name}"
 
     class Meta:
-        indexes = [models.Index(fields=["-created"])]
+        indexes = [
+            models.Index(fields=["-created"]),
+            models.Index(fields=["active"]),
+        ]
         db_table = 'human_resources'

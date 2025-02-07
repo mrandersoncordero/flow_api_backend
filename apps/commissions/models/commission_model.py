@@ -4,7 +4,7 @@
 from django.db import models
 
 # Utilities
-from flow.utils.main_model import MainModel
+from utils.main_model import MainModel
 from users.models.users_model import User
 
 class Commission(MainModel, models.Model):
@@ -28,3 +28,6 @@ class Commission(MainModel, models.Model):
     
     class Meta:
         db_table = "commisions"
+        indexes = [
+            models.Index(fields=['id', 'active']),
+        ]

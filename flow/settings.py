@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 import dj_database_url
 from dotenv import load_dotenv
@@ -20,6 +21,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Cargar el archivo .env
 load_dotenv(os.path.join(BASE_DIR, ".env"))
+
+# Agregar la carpeta "apps" al PATH de Python
+sys.path.insert(0, str(BASE_DIR / 'apps'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
