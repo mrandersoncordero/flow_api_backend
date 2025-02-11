@@ -20,12 +20,16 @@ from users.models import User
 import jwt
 from datetime import timedelta
 
+# SErializers
+from .human_resourse import HumanResourceModelSerializer
+
 class UserModelSerializer(serializers.ModelSerializer):
-    """User model serilizer."""
+    """User model serializer."""
+
+    human_resource = HumanResourceModelSerializer(read_only=True)
 
     class Meta:
         """Meta class."""
-
         model = User
         fields = [
             "id",
@@ -35,9 +39,9 @@ class UserModelSerializer(serializers.ModelSerializer):
             "email",
             "is_staff",
             "is_active",
-            "is_verified"
+            "is_verified",
+            "human_resource",
         ]
-
 
 class UserSingUpSerializer(serializers.Serializer):
     """User sign up model serializer.
