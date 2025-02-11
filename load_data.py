@@ -61,6 +61,7 @@ def create_superuser():
             last_name="",
             password="root",
             email="admin@email.com",
+            is_verified=True,
         )
         superuser.save()
         print("\nSuccessfully created superuser.")
