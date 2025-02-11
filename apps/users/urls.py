@@ -8,7 +8,10 @@ from .views import (
     UserLoginAPIView,
     UserSingUpAPIView,
     AccountVerificationAPIView,
-    UserAPIView,
+    UserListView,
+    UserDetailView,
+    UserUpdateView,
+    UserDeleteView,
     HumanResourceCreateAPIView,
     HumanResourceDetailUpdateAPIView
 )
@@ -19,8 +22,11 @@ urlpatterns = [
     path("users/login/", UserLoginAPIView.as_view(), name="login"),
     path("users/singup/", UserSingUpAPIView.as_view(), name="signup"),
     path("users/verify/", AccountVerificationAPIView.as_view(), name="verify"),
-    path("users/", UserAPIView.as_view(), name="list"),
-    path("users/<int:pk>", UserAPIView.as_view()),
+    path("users/", UserListView.as_view(), name="user-list"),  # GET All
+    path("users/<int:pk>/", UserDetailView.as_view(), name="user-detail"),  # GET by ID
+    path("users/<int:pk>/update/", UserUpdateView.as_view(), name="user-update"),  # PUT / PATCH
+    path("users/<int:pk>/delete/", UserDeleteView.as_view(), name="user-delete"),  # DELETE
+
     path(
         "human-resources/",
         HumanResourceCreateAPIView.as_view(),
