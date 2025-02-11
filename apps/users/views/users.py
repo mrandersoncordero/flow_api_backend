@@ -9,6 +9,12 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import (
+    ListAPIView,
+    RetrieveAPIView,
+    UpdateAPIView,
+    DestroyAPIView,
+)
 
 # Models
 from users.models import User
@@ -89,6 +95,178 @@ class AccountVerificationAPIView(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
+### 🔹 1. GET ALL (Lista de usuarios) ###
+class UserListView(ListAPIView):
+    """Lista todos los usuarios con filtros opcionales."""
+
+    queryset = User.objects.all()
+    serializer_class = UserModelSerializer
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "Authorization",
+                openapi.IN_HEADER,
+                description="Token de autenticación. Usar el formato 'Token <access_token>'",
+                type=openapi.TYPE_STRING,
+                required=True,
+                default="Token <ACCESS_TOKEN>",
+            ),
+            openapi.Parameter(
+                "email",
+                openapi.IN_QUERY,
+                description="Filtrar por email",
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "active",
+                openapi.IN_QUERY,
+                description="Filtrar por estado activo",
+                type=openapi.TYPE_BOOLEAN,
+            ),
+            openapi.Parameter(
+                "verified",
+                openapi.IN_QUERY,
+                description="Filtrar por estado verificado",
+                type=openapi.TYPE_BOOLEAN,
+            ),
+        ],
+        responses={200: UserModelSerializer(many=True)},
+    )
+    def get_queryset(self):
+        """Filtrar usuarios por email, estado activo y verificado."""
+        queryset = super().get_queryset()
+        email = self.request.query_params.get("email")
+        active = self.request.query_params.get("active")
+        verified = self.request.query_params.get("verified")
+
+        if email:
+            queryset = queryset.filter(email__icontains=email)
+        if active is not None:
+            queryset = queryset.filter(is_active=active.lower() == "true")
+        if verified is not None:
+            queryset = queryset.filter(is_verified=verified.lower() == "true")
+
+        return queryset
+
+
+### 🔹 2. GET by ID (Detalle de usuario) ###
+class UserDetailView(RetrieveAPIView):
+    """Obtiene un usuario por ID."""
+
+    queryset = User.objects.all()
+    serializer_class = UserModelSerializer
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "Authorization",
+                openapi.IN_HEADER,
+                description="Token de autenticación. Usar el formato 'Token <access_token>'",
+                type=openapi.TYPE_STRING,
+                required=True,
+                default="Token <ACCESS_TOKEN>",
+            ),
+        ],
+        responses={200: UserModelSerializer()},
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+
+### 🔹 3. PUT / PATCH (Actualizar usuario) ###
+class UserUpdateView(UpdateAPIView):
+    """Actualiza un usuario completamente (PUT) o parcialmente (PATCH)."""
+
+    queryset = User.objects.all()
+    serializer_class = UserModelSerializer
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "Authorization",
+                openapi.IN_HEADER,
+                description="Token de autenticación. Usar el formato 'Token <access_token>'",
+                type=openapi.TYPE_STRING,
+                required=True,
+                default="Token <ACCESS_TOKEN>",
+            ),
+        ],
+        request_body=UserModelSerializer,
+        responses={200: openapi.Response("Usuario actualizado", UserModelSerializer)},
+    )
+    def put(self, request, *args, **kwargs):
+        """PUT - Actualiza todos los campos."""
+        return super().put(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "Authorization",
+                openapi.IN_HEADER,
+                description="Token de autenticación. Usar el formato 'Token <access_token>'",
+                type=openapi.TYPE_STRING,
+                required=True,
+                default="Token <ACCESS_TOKEN>",
+            ),
+        ],
+        request_body=UserModelSerializer,
+        responses={
+            200: openapi.Response(
+                "Usuario parcialmente actualizado", UserModelSerializer
+            )
+        },
+    )
+    def patch(self, request, *args, **kwargs):
+        """PATCH - Actualiza solo algunos campos."""
+        return super().patch(request, *args, **kwargs)
+
+
+### 🔹 4. DELETE (Eliminar usuario) ###
+class UserDeleteView(DestroyAPIView):
+    """Elimina un usuario."""
+
+    queryset = User.objects.all()
+    serializer_class = UserModelSerializer
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "Authorization",
+                openapi.IN_HEADER,
+                description="Token de autenticación. Usar el formato 'Token <access_token>'",
+                type=openapi.TYPE_STRING,
+                required=True,
+                default="Token <ACCESS_TOKEN>",
+            ),
+        ],
+        responses={
+            200: openapi.Response(
+                "Usuario eliminado",
+                openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "message": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            example="Usuario eliminado correctamente",
+                        )
+                    },
+                ),
+            )
+        },
+    )
+    def delete(self, request, *args, **kwargs):
+        """DELETE - Elimina un usuario por ID."""
+        response = super().delete(request, *args, **kwargs)
+        return Response(
+            {"message": "Usuario eliminado correctamente"}, status=status.HTTP_200_OK
+        )
+
+
 class UserAPIView(APIView):
     """Retrieve a user or list users"""
 
@@ -102,7 +280,7 @@ class UserAPIView(APIView):
                 description="Token de autenticación. Usar el formato 'Token <access_token>'",
                 type=openapi.TYPE_STRING,
                 required=True,
-                default="Token <ACCESS_TOKEN>"
+                default="Token <ACCESS_TOKEN>",
             ),
             openapi.Parameter(
                 "email",
