@@ -1,14 +1,12 @@
 from rest_framework import serializers
 from users.models import HumanResource, User
-from users.serializers import UserModelSerializer  # Importamos el serializer de User
-
 
 class HumanResourceModelSerializer(serializers.ModelSerializer):
     """Serializer para el modelo de HumanResource."""
 
     class Meta:
         model = HumanResource
-        fields = ["biography", "phone_number", "picture"]
+        fields = '__all__'
 
     def update(self, instance, validated_data):
         """Evitar que se intente modificar el usuario."""
