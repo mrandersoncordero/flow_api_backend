@@ -17,7 +17,7 @@ class HumanResource(MainModel, models.Model):
     """
 
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='human_resource'
     )
     biography = models.TextField(blank=True)
     phone_number = models.CharField(max_length=20, blank=True)
