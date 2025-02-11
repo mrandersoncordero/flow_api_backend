@@ -54,7 +54,7 @@ DJANGO_APPS = [
     "whitenoise.runserver_nostatic",
 ]
 
-THIRD_PARTY_APPS = ["rest_framework", "rest_framework.authtoken", "anymail"]
+THIRD_PARTY_APPS = ["rest_framework", "rest_framework.authtoken", "drf_yasg"]
 
 LOCAL_APPS = [
     "users.apps.UsersConfig",
@@ -130,11 +130,11 @@ AUTH_PASSWORD_VALIDATORS = [
 EMAIL_BACKEND = os.environ.get(
     "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
 )
-ANYMAIL = {
-    "EMAIL_BACKEND": os.environ.get(
-        "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
-    ),  # Configuración para SMTP
-}
+# ANYMAIL = {
+#     "EMAIL_BACKEND": os.environ.get(
+#         "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
+#     ),  # Configuración para SMTP
+# }
 
 EMAIL_HOST = os.environ.get("EMAIL_HOST")
 EMAIL_PORT = os.environ.get("EMAIL_PORT")
@@ -182,8 +182,20 @@ STORAGES = {
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Django REST Framework
+# SWAGGER
+SWAGGER_SETTINGS = {
+    "SECURITY_DEFINITIONS": {
+        "Token": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+            "description": "Añadir 'Token <ACCESS_TOKEN>' en el header"
+        }
+    },
+    "USE_SESSION_AUTH": False,  # Evita que intente autenticarse con sesión de Django
+}
 
+# Django REST Framework
 REST_FRAMEWORK = {
     "DEFAULT_PARSER_CLASSES": [
         "rest_framework.parsers.JSONParser",
