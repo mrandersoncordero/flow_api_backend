@@ -6,7 +6,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib import admin
 
 # Models
-from .models import User
+from .models import User,HumanResource
 
 class UserAdmin(BaseUserAdmin):
     """Add profile admin to base user admin."""
@@ -18,3 +18,4 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(User, UserAdmin)
+admin.site.register(HumanResource)
