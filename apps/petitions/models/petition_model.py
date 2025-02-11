@@ -9,7 +9,7 @@ from utils.main_model import MainModel
 # Models
 from .department_model import Department
 from commissions.models import Commission
-from users.models.human_resources_model import HumanResource
+from users.models.users_model import User
 
 
 class Petition(MainModel, models.Model):
@@ -53,7 +53,7 @@ class Petition(MainModel, models.Model):
         on_delete=models.PROTECT,
         related_name="departments",
     )
-    human_resource = models.ForeignKey(HumanResource, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
 
     def clean(self):
         """Validaciones personalizadas para Petitions."""
@@ -72,7 +72,7 @@ class Petition(MainModel, models.Model):
             )
 
     def __str__(self):
-        return f"{self.title} by {self.human_resource}"
+        return f"{self.title} by {self.user}"
 
     class Meta:
         db_table = "petitions"
