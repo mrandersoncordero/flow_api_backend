@@ -7,6 +7,8 @@ from django.db import models
 from utils.main_model import MainModel
 from users.models.users_model import User
 
+from core.managers import ActiveManager
+
 class Commission(MainModel, models.Model):
     """Modelo de Comisión.
 
@@ -28,6 +30,7 @@ class Commission(MainModel, models.Model):
         "petitions.Petition",
         on_delete=models.CASCADE,
         related_name="commissions",
+        limit_choices_to={"is_main": False},
     )
 
     def __str__(self):
