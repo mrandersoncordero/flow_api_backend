@@ -40,4 +40,5 @@ urlpatterns = [
     # path('', include('tasks.urls', namespace='tasks')),
     path("", include("users.urls", namespace="users")),
     path("", include("petitions.urls", namespace="petitions")),
+    path("", include("commissions.urls", namespace="commissions")),
 ]
