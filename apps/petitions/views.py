@@ -16,6 +16,7 @@ from rest_framework.generics import (
     CreateAPIView,
     DestroyAPIView,
 )
+from rest_framework.views import APIView
 
 # Models
 from .models import Petition
@@ -225,3 +226,31 @@ class PetitionCreateView(CreateAPIView):
             {"message": "Petición creada correctamente", "data": serializer.data},
             status=status.HTTP_201_CREATED,
         )
+
+class PetitionActivateView(APIView):
+    """Activa una petición previamente eliminada (Soft Delete)."""
+
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Activa una petición eliminada (Soft Delete).",
+        responses={
+            200: openapi.Response(
+                description="Petición activada correctamente.",
+                examples={"application/json": {"message": "Petición activada correctamente."}}
+            ),
+            404: openapi.Response(
+                description="Petición no encontrada.",
+                examples={"application/json": {"error": "La petición no existe o ya está activa."}}
+            ),
+        },
+    )
+    def patch(self, request, petition_id):
+        """Activa una petición eliminada."""
+        try:
+            petition = Petition.active_objects.deleted().get(id=petition_id)
+            petition.restore()
+            return Response({"message": "Petición activada correctamente."}, status=status.HTTP_200_OK)
+        except Petition.DoesNotExist:
+            return Response({"error": "La petición no existe o ya está activa."}, status=status.HTTP_404_NOT_FOUND)
+

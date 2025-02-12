@@ -6,6 +6,7 @@ from .views import (
     PetitionUpdateView,
     PetitionDeleteView,
     PetitionCreateView,
+    PetitionActivateView
 )
 
 app_name = "petitions"
@@ -27,5 +28,10 @@ urlpatterns = [
         "petitions/<int:pk>/delete/",
         PetitionDeleteView.as_view(),
         name="petition-delete",
+    ),
+    path(
+        "petitions/<int:petition_id>/activate/",
+        PetitionActivateView.as_view(),
+        name="petition-activate",
     ),
 ]
