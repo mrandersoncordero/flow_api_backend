@@ -21,7 +21,7 @@ from rest_framework.generics import (
 from .models import Petition
 
 # Serializers
-from .serializers import PetitionModelserializer
+from .serializers import PetitionModelserializer, PetitionCreateSerializer
 
 # DRF Yasg
 from drf_yasg.utils import swagger_auto_schema
@@ -64,3 +64,164 @@ class PetitionListView(ListAPIView):
             date_until = parse_date(date_until)
             if date_until:
                 queryset = queryset.filter(created__lte=date_until)
+
+        return queryset
+
+
+class PetitionDetailView(RetrieveAPIView):
+
+    queryset = Petition.objects.all()
+    serializer_class = PetitionModelserializer
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "Authorization",
+                openapi.IN_HEADER,
+                description="Token de autenticación. Usar el formato 'Token <access_token>'",
+                type=openapi.TYPE_STRING,
+                required=True,
+                default="Token <ACCESS_TOKEN>",
+            ),
+        ],
+        responses={200: PetitionModelserializer()},
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+
+class PetitionUpdateView(UpdateAPIView):
+    queryset = Petition.objects.all()
+    serializer_class = PetitionModelserializer
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "Authorization",
+                openapi.IN_HEADER,
+                description="Token de autenticación. Usar el formato 'Token <access_token>'",
+                type=openapi.TYPE_STRING,
+                required=True,
+                default="Token <ACCESS_TOKEN>",
+            ),
+        ],
+        request_body=PetitionModelserializer,
+        responses={
+            200: openapi.Response("Peticion actualizada", PetitionModelserializer)
+        },
+    )
+    def put(self, request, *args, **kwargs):
+        return super().put(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "Authorization",
+                openapi.IN_HEADER,
+                description="Token de autenticación. Usar el formato 'Token <access_token>'",
+                type=openapi.TYPE_STRING,
+                required=True,
+                default="Token <ACCESS_TOKEN>",
+            ),
+        ],
+        request_body=PetitionModelserializer,
+        responses={
+            200: openapi.Response(
+                "Peticion parcialmente actualizada", PetitionModelserializer
+            )
+        },
+    )
+    def patch(self, request, *args, **kwargs):
+        return super().patch(request, *args, **kwargs)
+
+
+class PetitionDeleteView(DestroyAPIView):
+
+    queryset = Petition.objects.all()
+    serializer_class = PetitionModelserializer
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "Authorization",
+                openapi.IN_HEADER,
+                description="Token de autenticación. Usar el formato 'Token <access_token>'",
+                type=openapi.TYPE_STRING,
+                required=True,
+                default="Token <ACCESS_TOKEN>",
+            ),
+        ],
+        responses={
+            200: openapi.Response(
+                "Peticion eliminada",
+                openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "message": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            example="Usuario eliminada correctamente",
+                        )
+                    },
+                ),
+            )
+        },
+    )
+    def delete(self, request, *args, **kwargs):
+        petition = self.get_object()
+        petition.soft_delete()
+
+        return Response(
+            {"message": "Petición eliminada correctamente"},
+            status=status.HTTP_200_OK,
+        )
+
+class PetitionCreateView(CreateAPIView):
+    queryset = Petition.objects.all()
+    serializer_class = PetitionCreateSerializer
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "Authorization",
+                openapi.IN_HEADER,
+                description="Token de autenticación. Usar el formato 'Token <access_token>'",
+                type=openapi.TYPE_STRING,
+                required=True,
+                default="Token <ACCESS_TOKEN>",
+            ),
+        ],
+        responses={
+            201: openapi.Response(
+                "Petición creada",
+                openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "message": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            example="Petición creada correctamente",
+                        ),
+                        "data": openapi.Schema(
+                            type=openapi.TYPE_OBJECT,
+                            properties={
+                                "id": openapi.Schema(type=openapi.TYPE_INTEGER),
+                                "title": openapi.Schema(type=openapi.TYPE_STRING),
+                            },
+                        ),
+                    },
+                ),
+            )
+        },
+    )
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        petition = serializer.save()  # Guarda la petición
+
+        return Response(
+            {"message": "Petición creada correctamente", "data": serializer.data},
+            status=status.HTTP_201_CREATED,
+        )
