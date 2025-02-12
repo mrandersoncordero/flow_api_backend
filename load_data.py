@@ -10,6 +10,7 @@ django.setup()
 # Models
 from petitions.models import Department
 from users.models import User
+from users.models.human_resources_model import HumanResource
 
 
 def load_data(
@@ -68,10 +69,34 @@ def create_superuser():
     else:
         print("Superuser already exists. Skipping creation.")
 
+def create_user_test():
+    if not User.objects.filter(username="test").exists():
+        user = User.objects.create(
+            username="test",
+            first_name="Jhon",
+            last_name="Dae",
+            email="test@email.com",
+            is_verified=True,
+        )
+        user.save()
+        print("\nSuccessfully created superuser.\n")
+
+        human_resource = HumanResource.objects.create(
+            user=user,
+            biography="Biografia del usuario test.",
+            phone_number="9898989898",
+        )
+        human_resource.save()
+        print("Successfully created human resource.\n")
+    else:
+        print("User already exists. Skipping creation.")
+
 
 def main():
 
     create_superuser()
+
+    create_user_test()
 
     data_department = [
         {"name": "Service Pack"},
