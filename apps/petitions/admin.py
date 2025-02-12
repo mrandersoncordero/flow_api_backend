@@ -31,8 +31,9 @@ class PetitionAdmin(admin.ModelAdmin):
         "title",
         "priority",
         "is_main",
+        "active",
         "status_approval",
-        "department"
+        "department",
     ]
     list_filter = ["priority", "status_approval", "created"]
     search_fields = ["title", "description"]
