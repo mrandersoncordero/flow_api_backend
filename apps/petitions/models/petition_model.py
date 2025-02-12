@@ -31,16 +31,10 @@ class Petition(MainModel, models.Model):
         APPROVED = "AP", "APPROVED"
         NOT_APPROVED = "NP", "NOT_APPROVED"
 
-    parent_petition = models.ForeignKey(
-        "self",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="child_petitions",
-        verbose_name="parent petition",
-    )
-    title = models.CharField(verbose_name="title", max_length=120)
-    description = models.TextField(verbose_name="description")
+    is_main = models.BooleanField(default=True, verbose_name="Is main petition")
+
+    title = models.CharField(verbose_name="Title", max_length=120)
+    description = models.TextField(verbose_name="Description")
     priority = models.CharField(
         max_length=2, choices=Priority, default=Priority.LOW
     )
@@ -54,22 +48,6 @@ class Petition(MainModel, models.Model):
         related_name="departments",
     )
     user = models.ForeignKey(User, on_delete=models.PROTECT)
-
-    def clean(self):
-        """Validaciones personalizadas para Petitions."""
-        from django.core.exceptions import ValidationError
-
-        # Si es una petición principal, no puede tener comisiones
-        if self.parent_petition is None and self.commissions.exists():
-            raise ValidationError(
-                "Una petición principal no puede tener comisiones asignadas."
-            )
-
-        # Si es una petición hija, debe tener una petición principal y al menos una comisión
-        if self.parent_petition is not None and not self.commissions.exists():
-            raise ValidationError(
-                "Las peticiones hijas deben estar asociadas a al menos una comisión."
-            )
 
     def __str__(self):
         return f"{self.title} by {self.user}"
