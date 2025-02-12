@@ -18,8 +18,9 @@ class MainModel(BaseModel):
 
     active = models.BooleanField(verbose_name="Activo", default=True, help_text="")
 
-    objects = ActiveManager()  # 🔥 Filtra por defecto solo activos
-
+    objects = models.Manager() # Manager por defecto
+    active_objects = ActiveManager() # Manejar para filtrar activos
+    
     def soft_delete(self):
         """Elimina el objeto sin borrarlo de la BD (Soft Delete)."""
         self.deleted = now()
