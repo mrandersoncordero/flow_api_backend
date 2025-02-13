@@ -6,6 +6,7 @@ from django.conf import settings
 
 # Utilities
 from utils.main_model import MainModel
+from petitions.models import Department, Company
 
 
 class HumanResource(MainModel, models.Model):
@@ -17,7 +18,22 @@ class HumanResource(MainModel, models.Model):
     """
 
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='human_resource'
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="human_resource",
+    )
+
+    department = models.ForeignKey(
+        Department,
+        on_delete=models.SET_NULL,
+        related_name="hr_departments",
+        null=True,
+        blank=True
+    )
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.PROTECT,
+        related_name="hr_companies",
     )
     biography = models.TextField(blank=True)
     phone_number = models.CharField(max_length=20, blank=True)
@@ -32,4 +48,4 @@ class HumanResource(MainModel, models.Model):
             models.Index(fields=["-created"]),
             models.Index(fields=["active"]),
         ]
-        db_table = 'human_resources'
+        db_table = "human_resources"

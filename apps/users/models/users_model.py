@@ -29,6 +29,12 @@ class User(BaseModel, AbstractUser):
         default=False,
         help_text="Set to true when the user have verified its email address. ",
     )
+    is_client = models.BooleanField(
+        "verified",
+        default=False,
+        help_text="Set to true when the user have verified its email address. ",
+    )
+
     last_login = models.DateTimeField(
         verbose_name="Último inicio de sesión", default=Now()
     )

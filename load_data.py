@@ -45,7 +45,7 @@ def load_data(
 
             obj = model(**d)
             obj.save()
-            if message[0] == 'Creating Commission':
+            if message[0] == "Creating Commission":
                 obj.users.set([User.objects.get(pk=2)])
             print(f"- {obj} created successfully.")
 
@@ -89,6 +89,8 @@ def create_user_test():
             user=user,
             biography="Biografia del usuario test.",
             phone_number="9898989898",
+            department=Department.objects.get(pk=5),
+            company=Company.objects.get(pk=1),
         )
         human_resource.save()
         print("Test user human resource successfully created.\n")
@@ -97,10 +99,6 @@ def create_user_test():
 
 
 def main():
-
-    create_superuser()
-
-    create_user_test()
 
     data_department = [
         {"name": "Service Pack"},
@@ -117,19 +115,6 @@ def main():
         unique_fields=["name"],
         message=["Creating department", "Department successfully created"],
     )
-
-    # data_taskstatus = [
-    #     {"name": "Completado"},
-    #     {"name": "En Progreso"},
-    #     {"name": "No Iniciado"},
-    # ]
-
-    # load_data(
-    #     data_taskstatus,
-    #     model=TaskStatus,
-    #     unique_fields=["name"],
-    #     message=["Creating TaskStatus", "TaskStatus successfully created"],
-    # )
 
     data_companies = [
         {"name": "Branar, C.A."},
@@ -148,6 +133,10 @@ def main():
         unique_fields=["name"],
         message=["Creating Company", "Company successfully created"],
     )
+
+    create_superuser()
+
+    create_user_test()
 
     data_petitions = [
         {
