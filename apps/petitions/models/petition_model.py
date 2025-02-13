@@ -8,6 +8,7 @@ from utils.main_model import MainModel
 
 # Models
 from .department_model import Department
+from .company_model import Company
 from commissions.models import Commission
 from users.models.users_model import User
 
@@ -35,9 +36,7 @@ class Petition(MainModel, models.Model):
 
     title = models.CharField(verbose_name="Title", max_length=120)
     description = models.TextField(verbose_name="Description")
-    priority = models.CharField(
-        max_length=2, choices=Priority, default=Priority.LOW
-    )
+    priority = models.CharField(max_length=2, choices=Priority, default=Priority.LOW)
     status_approval = models.CharField(
         max_length=2, choices=StatusApproval, default=StatusApproval.WAITING
     )
@@ -46,6 +45,11 @@ class Petition(MainModel, models.Model):
         Department,
         on_delete=models.PROTECT,
         related_name="departments",
+    )
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.PROTECT,
+        related_name="companies",
     )
     user = models.ForeignKey(User, on_delete=models.PROTECT)
 
