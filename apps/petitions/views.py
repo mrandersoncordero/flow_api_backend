@@ -20,6 +20,8 @@ from rest_framework.views import APIView
 
 # Models
 from .models import Petition
+from users.models import User
+from petitions.models import Company, Department
 
 # Serializers
 from .serializers import (
@@ -56,6 +58,21 @@ class PetitionListView(ListAPIView):
         date_from = self.request.query_params.get("date_from", None)
         date_until = self.request.query_params.get("date_until", None)
         title = self.request.query_params.get("title", None)
+        user_id = self.request.query_params.get("user_id", None)
+        department_id = self.request.query_params.get("department_id", None)
+        company_id = self.request.query_params.get("company_id", None)
+
+        if user_id:
+            user = get_object_or_404(User, pk=user_id)
+            queryset = queryset.filter(user__id=user_id)
+
+        if department_id:
+            department = get_object_or_404(Department, pk=department_id)
+            queryset = queryset.filter(department__id=department_id)
+
+        if company_id:
+            company = get_object_or_404(Company, pk=company_id)
+            queryset = queryset.filter(company__id=company_id)
 
         if title:
             queryset = queryset.filter(title__icontains=title)
