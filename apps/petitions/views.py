@@ -22,7 +22,11 @@ from rest_framework.views import APIView
 from .models import Petition
 
 # Serializers
-from .serializers import PetitionModelserializer, PetitionCreateSerializer
+from .serializers import (
+    PetitionModelserializer,
+    PetitionCreateSerializer,
+    PetitionFullDetailserializer,
+)
 
 # DRF Yasg
 from drf_yasg.utils import swagger_auto_schema
@@ -72,7 +76,7 @@ class PetitionListView(ListAPIView):
 class PetitionDetailView(RetrieveAPIView):
 
     queryset = Petition.objects.all()
-    serializer_class = PetitionModelserializer
+    serializer_class = PetitionFullDetailserializer
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
@@ -86,7 +90,7 @@ class PetitionDetailView(RetrieveAPIView):
                 default="Token <ACCESS_TOKEN>",
             ),
         ],
-        responses={200: PetitionModelserializer()},
+        responses={200: PetitionFullDetailserializer()},
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
@@ -179,6 +183,7 @@ class PetitionDeleteView(DestroyAPIView):
             status=status.HTTP_200_OK,
         )
 
+
 class PetitionCreateView(CreateAPIView):
     queryset = Petition.objects.all()
     serializer_class = PetitionCreateSerializer
@@ -227,6 +232,7 @@ class PetitionCreateView(CreateAPIView):
             status=status.HTTP_201_CREATED,
         )
 
+
 class PetitionActivateView(APIView):
     """Activa una petición previamente eliminada (Soft Delete)."""
 
@@ -237,11 +243,17 @@ class PetitionActivateView(APIView):
         responses={
             200: openapi.Response(
                 description="Petición activada correctamente.",
-                examples={"application/json": {"message": "Petición activada correctamente."}}
+                examples={
+                    "application/json": {"message": "Petición activada correctamente."}
+                },
             ),
             404: openapi.Response(
                 description="Petición no encontrada.",
-                examples={"application/json": {"error": "La petición no existe o ya está activa."}}
+                examples={
+                    "application/json": {
+                        "error": "La petición no existe o ya está activa."
+                    }
+                },
             ),
         },
     )
@@ -250,7 +262,12 @@ class PetitionActivateView(APIView):
         try:
             petition = Petition.active_objects.deleted().get(id=petition_id)
             petition.restore()
-            return Response({"message": "Petición activada correctamente."}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "Petición activada correctamente."},
+                status=status.HTTP_200_OK,
+            )
         except Petition.DoesNotExist:
-            return Response({"error": "La petición no existe o ya está activa."}, status=status.HTTP_404_NOT_FOUND)
-
+            return Response(
+                {"error": "La petición no existe o ya está activa."},
+                status=status.HTTP_404_NOT_FOUND,
+            )

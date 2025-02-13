@@ -8,11 +8,13 @@ from .models import Commission
 from petitions.models import Petition
 from users.models import User
 
+
 class CommissionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Commission
-        fields = '__all__'
+        fields = "__all__"
+
 
 class CommissionModelSerializer(serializers.ModelSerializer):
 
@@ -30,6 +32,7 @@ class CommissionModelSerializer(serializers.ModelSerializer):
         def validate_petition(self, value):
             """Valida que la peticion tenga is_main=False (solo peticiones secundarias)."""
             if value.is_main:
-                raise serializers.ValidationError("Solo puedes asignar comisiones a peticiones secundarias (is_main=False).")
+                raise serializers.ValidationError(
+                    "Solo puedes asignar comisiones a peticiones secundarias (is_main=False)."
+                )
             return value
-
