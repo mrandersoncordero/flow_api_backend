@@ -8,6 +8,11 @@ from .models import Commission
 from petitions.models import Petition
 from users.models import User
 
+class CommissionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Commission
+        fields = '__all__'
 
 class CommissionModelSerializer(serializers.ModelSerializer):
 
