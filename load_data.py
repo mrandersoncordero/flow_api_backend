@@ -79,6 +79,7 @@ def create_user_test():
             username="test",
             first_name="Jhon",
             last_name="Dae",
+            password="test",
             email="test@email.com",
             is_verified=True,
         )
