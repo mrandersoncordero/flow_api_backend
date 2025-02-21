@@ -36,7 +36,7 @@ from drf_yasg import openapi
 
 
 class PetitionListView(ListAPIView):
-    queryset = Petition.objects.all()
+    queryset = Petition.active_objects.all()
     serializer_class = PetitionModelserializer
     permission_classes = [IsAuthenticated]
 
@@ -92,7 +92,7 @@ class PetitionListView(ListAPIView):
 
 class PetitionDetailView(RetrieveAPIView):
 
-    queryset = Petition.objects.all()
+    queryset = Petition.active_objects.all()
     serializer_class = PetitionFullDetailserializer
     permission_classes = [IsAuthenticated]
 
@@ -114,7 +114,7 @@ class PetitionDetailView(RetrieveAPIView):
 
 
 class PetitionUpdateView(UpdateAPIView):
-    queryset = Petition.objects.all()
+    queryset = Petition.active_objects.all()
     serializer_class = PetitionModelserializer
     permission_classes = [IsAuthenticated]
 
@@ -161,7 +161,7 @@ class PetitionUpdateView(UpdateAPIView):
 
 class PetitionDeleteView(DestroyAPIView):
 
-    queryset = Petition.objects.all()
+    queryset = Petition.active_objects.all()
     serializer_class = PetitionModelserializer
     permission_classes = [IsAuthenticated]
 
@@ -202,7 +202,7 @@ class PetitionDeleteView(DestroyAPIView):
 
 
 class PetitionCreateView(CreateAPIView):
-    queryset = Petition.objects.all()
+    queryset = Petition.active_objects.all()
     serializer_class = PetitionCreateSerializer
     permission_classes = [IsAuthenticated]
 

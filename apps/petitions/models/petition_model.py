@@ -31,6 +31,7 @@ class Petition(MainModel, models.Model):
         WAITING = "WT", "WAITING"
         APPROVED = "AP", "APPROVED"
         NOT_APPROVED = "NP", "NOT_APPROVED"
+        DONE = "DN", "DONE"
 
     is_main = models.BooleanField(default=True, verbose_name="Is main petition")
 
@@ -53,6 +54,11 @@ class Petition(MainModel, models.Model):
     )
     user = models.ForeignKey(User, on_delete=models.PROTECT)
 
+    hours = models.DurationField(verbose_name="tiempo invertido", null=True, blank=True)
+
+    start_date = models.DateTimeField(blank=True, null=True)
+    end_date = models.DateTimeField(blank=True, null=True)
+    
     def __str__(self):
         return f"{self.title} by {self.user}"
 
