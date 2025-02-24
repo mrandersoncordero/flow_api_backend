@@ -7,7 +7,7 @@ from .models import Department, Petition
 
 @admin.register(Department)
 class DepartmentAdmin(admin.ModelAdmin):
-    list_display = ["id", "name"]
+    list_display = ["id", "name", "active"]
     list_display_links = ["id"]
     list_editable = ["name"]
 

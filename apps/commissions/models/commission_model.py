@@ -9,6 +9,7 @@ from users.models.users_model import User
 
 from core.managers import ActiveManager
 
+
 class Commission(MainModel, models.Model):
     """Modelo de Comisión.
 
@@ -33,11 +34,11 @@ class Commission(MainModel, models.Model):
         limit_choices_to={"is_main": False},
     )
 
-    def __str__(self):
-        return f"{self.description} (Petition: {self.petition.title})"
-
     class Meta:
         db_table = "commissions"
         indexes = [
-            models.Index(fields=["id", "active"]),
+            models.Index(fields=["id", "active", "deleted"]),
         ]
+
+    def __str__(self):
+        return f"{self.description} (Petition: {self.petition.title})"

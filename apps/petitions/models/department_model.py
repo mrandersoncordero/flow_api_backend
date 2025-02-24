@@ -21,3 +21,6 @@ class Department(MainModel, models.Model):
     
     class Meta:
         db_table = 'departments'
+        indexes = [
+            models.Index(fields=['active', 'deleted'])
+        ]

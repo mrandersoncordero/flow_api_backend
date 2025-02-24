@@ -46,6 +46,7 @@ class Petition(MainModel, models.Model):
         Department,
         on_delete=models.PROTECT,
         related_name="departments",
+        limit_choices_to={"active": True, "deleted__isnull": True},  # 🔥 Filtrar automáticamente
     )
     company = models.ForeignKey(
         Company,
@@ -64,3 +65,14 @@ class Petition(MainModel, models.Model):
 
     class Meta:
         db_table = "petitions"
+        indexes = [
+            models.Index(fields=['active', 'deleted'])
+        ]
+
+    def restore(self):
+        """Evita restaurar peticiones finalizadas."""
+        if self.status_approval == self.StatusApproval.DONE:
+            raise ValueError("No se puede restaurar una petición finalizada.")
+        self.deleted = None
+        self.active = True
+        self.save()

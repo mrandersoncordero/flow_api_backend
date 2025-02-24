@@ -25,3 +25,6 @@ class PetitionsAttachment(MainModel, models.Model):
     
     class Meta:
         db_table = 'petition_attachment'
+        indexes = [
+            models.Index(fields=['active', 'deleted'])
+        ]

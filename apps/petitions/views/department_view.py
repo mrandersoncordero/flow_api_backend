@@ -19,7 +19,7 @@ from rest_framework.generics import (
 from rest_framework.views import APIView
 
 # Models
-from petitions.models import Company, Department
+from petitions.models import Company, Department, Petition
 
 # Serializers
 from petitions.serializers import DepartmentSerializer, DepartmentCreateSerializer
@@ -30,7 +30,7 @@ from drf_yasg import openapi
 
 
 class DepartmentListView(ListAPIView):
-    queryset = Department.objects.all()
+    queryset = Department.active_objects.all()
     serializer_class = DepartmentSerializer
     permission_classes = [IsAuthenticated]
 
@@ -52,7 +52,7 @@ class DepartmentListView(ListAPIView):
 
 
 class DepartmentDetailView(RetrieveAPIView):
-    queryset = Department.objects.all()
+    queryset = Department.active_objects.all()
     serializer_class = DepartmentSerializer
     permission_classes = [IsAuthenticated]
 
@@ -74,7 +74,7 @@ class DepartmentDetailView(RetrieveAPIView):
 
 
 class DepartmentUpdateView(UpdateAPIView):
-    queryset = Department.objects.all()
+    queryset = Department.active_objects.all()
     serializer_class = DepartmentSerializer
     permission_classes = [IsAuthenticated]
 
@@ -120,7 +120,7 @@ class DepartmentUpdateView(UpdateAPIView):
 
 
 class DepartmentDeleteView(DestroyAPIView):
-    queryset = Department.objects.all()
+    queryset = Department.objects.all()  # 🔥 Permite encontrar eliminados
     serializer_class = DepartmentSerializer
     permission_classes = [IsAuthenticated]
 
@@ -151,9 +151,18 @@ class DepartmentDeleteView(DestroyAPIView):
         },
     )
     def delete(self, request, *args, **kwargs):
-        petition = self.get_object()
-        petition.soft_delete()
+        department = self.get_object()
 
+        # 🔥 Verificar si hay peticiones activas asociadas a este departamento
+        if Petition.active_objects.filter(department=department).exists():
+            return Response(
+                {
+                    "error": "No se puede eliminar el departamento porque tiene peticiones activas."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+        department.soft_delete()
         return Response(
             {"message": "Departamento eliminado correctamente"},
             status=status.HTTP_200_OK,
@@ -201,7 +210,7 @@ class DepartmentCreateView(CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        petition = serializer.save()
+        department = serializer.save()
 
         return Response(
             {"message": "Departamento creado correctamente", "data": serializer.data},
