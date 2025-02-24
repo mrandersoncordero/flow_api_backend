@@ -19,7 +19,8 @@ from rest_framework.generics import (
 from rest_framework.views import APIView
 
 # Models
-from petitions.models import Company
+from petitions.models import Company, Petition
+from users.models import HumanResource
 
 # Serializers
 from petitions.serializers import CompanySerializer, CompanyCreateSerializer
@@ -30,7 +31,7 @@ from drf_yasg import openapi
 
 
 class CompanyListView(ListAPIView):
-    queryset = Company.objects.all()
+    queryset = Company.active_objects.all()
     serializer_class = CompanySerializer
     permission_classes = [IsAuthenticated]
 
@@ -52,7 +53,7 @@ class CompanyListView(ListAPIView):
 
 
 class CompanyDetailView(RetrieveAPIView):
-    queryset = Company.objects.all()
+    queryset = Company.active_objects.all()
     serializer_class = CompanySerializer
     permission_classes = [IsAuthenticated]
 
@@ -74,7 +75,7 @@ class CompanyDetailView(RetrieveAPIView):
 
 
 class CompanyUpdateView(UpdateAPIView):
-    queryset = Company.objects.all()
+    queryset = Company.active_objects.all()
     serializer_class = CompanySerializer
     permission_classes = [IsAuthenticated]
 
@@ -151,9 +152,26 @@ class CompanyDeleteView(DestroyAPIView):
         },
     )
     def delete(self, request, *args, **kwargs):
-        petition = self.get_object()
-        petition.soft_delete()
-
+        company = self.get_object()
+        # 🔥 Verificar si hay peticiones activas asociadas a esta empresa
+        if Petition.active_objects.filter(company=company).exists():
+            return Response(
+                {
+                    "error": "No se puede eliminar la empresa porque tiene peticiones activas."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+        # 🔥 Verificar si hay recursos humanos activos asociados a esta empresa
+        if HumanResource.active_objects.filter(company=company).exists():
+            return Response(
+                {
+                    "error": "No se puede eliminar la empresa porque tiene usuarios activos."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+        company.soft_delete()
         return Response(
             {"message": "Empresa eliminada correctamente"},
             status=status.HTTP_200_OK,

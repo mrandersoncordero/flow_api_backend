@@ -78,17 +78,17 @@ urlpatterns = [
         name="company-detail",
     ),
     path(
-        "companies/create",
+        "companies/create/",
         CompanyCreateView.as_view(),
         name="company-create",
     ),
     path(
-        "companies/<int:pk>/update",
+        "companies/<int:pk>/update/",
         CompanyUpdateView.as_view(),
         name="company-update",
     ),
     path(
-        "companies/<int:pk>/delete",
+        "companies/<int:pk>/delete/",
         CompanyDeleteView.as_view(),
         name="company-delete",
     ),

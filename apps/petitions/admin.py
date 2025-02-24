@@ -2,7 +2,7 @@
 from django.contrib import admin
 
 # Models
-from .models import Department, Petition
+from .models import Department, Petition, Company
 
 
 @admin.register(Department)
@@ -23,6 +23,23 @@ class DepartmentAdmin(admin.ModelAdmin):
 
     readonly_fields = ("created", "modified")
 
+@admin.register(Company)
+class CompanyAdmin(admin.ModelAdmin):
+    list_display = ["id", "name", "active"]
+    list_display_links = ["id"]
+    list_editable = ["name"]
+
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": ("name", "active"),
+            },
+        ),
+        ("Metadata", {"fields": (("created", "modified"),)}),
+    )
+
+    readonly_fields = ("created", "modified")
 
 @admin.register(Petition)
 class PetitionAdmin(admin.ModelAdmin):
