@@ -4,7 +4,8 @@
 from rest_framework import serializers
 
 # Models
-from petitions.models import Petition
+from petitions.models import Petition, Department, Company
+from users.models import User
 
 # Serializers
 from users.serializers import UserModelSerializer
@@ -65,9 +66,9 @@ class PetitionFullDetailserializer(serializers.ModelSerializer):
 class PetitionModelserializer(serializers.ModelSerializer):
     """Petiion model serializer."""
 
-    user = UserModelSerializer(read_only=True)
-    company = CompanySerializer(read_only=True)
-    department = DepartmentSerializer(read_only=True)
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all())
+    company = serializers.PrimaryKeyRelatedField(queryset=Company.objects.all())
     hours = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
     class Meta:
@@ -133,6 +134,7 @@ class PetitionCreateSerializer(serializers.ModelSerializer):
             "priority",
             "status_approval",
             "department",
+            "company",
             "user",
             "active",
             "hours",
