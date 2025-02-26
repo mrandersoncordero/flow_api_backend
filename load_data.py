@@ -1,11 +1,12 @@
 import os
-from datetime import timedelta
 import django
-from django.db import IntegrityError
 
 # Configurar el entorno de Django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "flow.settings")
 django.setup()
+
+from django.db import IntegrityError
+from django.contrib.auth.models import Group
 
 # Models
 from petitions.models import Department, Company, Petition
@@ -33,7 +34,6 @@ def load_data(
     for d in data:
         try:
             if unique_fields:
-                # Verificar si el registro ya existe basado en campos únicos
                 filter_kwargs = {
                     field: d[field] for field in unique_fields if field in d
                 }
@@ -45,8 +45,6 @@ def load_data(
 
             obj = model(**d)
             obj.save()
-            if message[0] == "Creating Commission":
-                obj.users.set([User.objects.get(pk=2)])
             print(f"- {obj} created successfully.")
 
         except IntegrityError as e:
@@ -67,41 +65,16 @@ def create_superuser():
             email="admin@email.com",
             is_verified=True,
         )
+        superuser.groups.add(Group.objects.get(name="Admin"))
         superuser.save()
         print("\nSuccessfully created superuser.")
     else:
         print("Superuser already exists. Skipping creation.")
 
 
-def create_user_test():
-    if not User.objects.filter(username="test").exists():
-        user = User.objects.create(
-            username="test",
-            first_name="Jhon",
-            last_name="Dae",
-            password="test",
-            email="test@email.com",
-            is_verified=True,
-        )
-        user.save()
-        print("\nSuccessfully created test user.\n")
-
-        human_resource = HumanResource.objects.create(
-            user=user,
-            biography="Biografia del usuario test.",
-            phone_number="9898989898",
-            department=Department.objects.get(pk=5),
-            company=Company.objects.get(pk=1),
-        )
-        human_resource.save()
-        print("Test user human resource successfully created.\n")
-    else:
-        print("User already exists. Skipping creation.")
-
-
 def main():
 
-    data_department = [
+    data_department = [  # Definir los departamentos a crear
         {"name": "Service Pack"},
         {"name": "Infraestructura"},
         {"name": "Social Media"},
@@ -110,14 +83,14 @@ def main():
         {"name": "Centro de Servicio EPSON"},
     ]
 
-    load_data(
+    load_data(  # Insertar departamentos en la base de datos
         data_department,
         model=Department,
         unique_fields=["name"],
         message=["Creating department", "Department successfully created"],
     )
 
-    data_companies = [
+    data_companies = [  # Definir las empresas a crear
         {"name": "Branar, C.A."},
         {"name": "Franar, C.A."},
         {"name": "Procesadora de Silice, C.A."},
@@ -128,18 +101,104 @@ def main():
         {"name": "Distribucion & Servicios Industriales, C.A."},
     ]
 
-    load_data(
+    load_data(  # Insertar empresas en la base de datos
         data_companies,
         model=Company,
         unique_fields=["name"],
         message=["Creating Company", "Company successfully created"],
     )
 
-    create_superuser()
+    users_data = [  # Definir los usuarios a crear
+        {
+            "username": "client1",
+            "first_name": "Carlos",
+            "last_name": "Perez",
+            "email": "client1@email.com",
+            "is_verified": True,
+        },
+        {
+            "username": "client2",
+            "first_name": "Maria",
+            "last_name": "Gomez",
+            "email": "client2@email.com",
+            "is_verified": True,
+        },
+        {
+            "username": "client3",
+            "first_name": "Luis",
+            "last_name": "Fernandez",
+            "email": "client3@email.com",
+            "is_verified": True,
+        },
+        {
+            "username": "manager1",
+            "first_name": "Ana",
+            "last_name": "Torres",
+            "email": "manager1@email.com",
+            "is_verified": True,
+        },
+        {
+            "username": "manager2",
+            "first_name": "Pedro",
+            "last_name": "Ramirez",
+            "email": "manager2@email.com",
+            "is_verified": True,
+        },
+    ]
 
-    create_user_test()
+    human_resource_data = [
+        {"user": "client1", "department": None, "company": 2},
+        {"user": "client2", "department": None, "company": 2},
+        {"user": "client3", "department": None, "company": 3},
+        {"user": "manager1", "department": 2, "company": 1},
+        {"user": "manager2", "department": 5, "company": 1},
+    ]
 
-    data_petitions = [
+    # Crear Grupos
+    admin_group, _ = Group.objects.get_or_create(name="Admin")
+    manager_group, _ = Group.objects.get_or_create(name="Manager")
+    employee_group, _ = Group.objects.get_or_create(name="Employee")
+    client_group, _ = Group.objects.get_or_create(name="Client")
+
+    create_superuser()  # Crear superusuario
+
+    load_data(  # Insertar usuarios en la base de datos
+        users_data,
+        User,
+        unique_fields=["username"],
+        message=["Creating Users", "Users Created Successfully"],
+    )
+
+    # Asignar grupos y crear HumanResource para cada usuario
+    for user_data in users_data:
+        user = User.objects.get(username=user_data["username"])
+        if "client" in user.username:
+            group = Group.objects.get(name="Client")
+        else:
+            group = Group.objects.get(name="Manager")
+
+        user.groups.add(group)
+        user.set_password(user.username)  # Asignar la contraseña igual al username
+        user.save()
+
+        # Crear HumanResource
+        human_resource = HumanResource.objects.create(
+            user=user,
+            biography=f"Biografia del usuario {user.username}.",
+            phone_number="9898989898",
+            department=Department.objects.get(pk=5),
+            company=Company.objects.get(pk=1),
+        )
+        if "client" in user.username:
+            human_resource.company = Company.objects.get(pk=2)
+            human_resource.department = None
+        else:
+            human_resource.company = Company.objects.get(pk=1)
+            human_resource.department = Department.objects.get(pk=5)
+        human_resource.save()
+        print(f"Human resource for {user.username} successfully created.")
+
+    data_petitions = [  # Definir las peticiones a crear
         {
             "is_main": True,
             "title": "Mantenimiento de Equipos NIB",
@@ -178,7 +237,7 @@ def main():
             "status_approval": "AP",
             "department": Department.objects.get(pk=5),
             "company": Company.objects.get(pk=1),
-            "user": User.objects.get(pk=2),
+            "user": User.objects.get(pk=5),
         },
         {
             "is_main": False,
@@ -192,13 +251,13 @@ def main():
         },
     ]
 
-    load_data(
+    load_data(  # Insertar peticiones en la base de datos
         data_petitions,
         model=Petition,
         message=["Creating Petition", "Petition successfully created"],
     )
-    users = User.objects.filter(id__in=[2])
-    data_commissions = [
+
+    data_commissions = [  # Definir las comisiones a crear
         {
             "description": "Cambiar Base de datos",
             "status": "OPEN",
@@ -221,49 +280,11 @@ def main():
         },
     ]
 
-    # Crea las comisiones
-    load_data(
+    load_data(  # Insertar comisiones en la base de datos
         data_commissions,
         model=Commission,
         message=["Creating Commission", "Commission successfully created"],
     )
-
-    # data_task = []
-    # departments = Department.objects.all()
-    # task_status = TaskStatus.objects.get(pk=3)
-    # user = User.objects.first()
-
-    # company_id = 1
-
-    # for department in departments:
-    #     data_task.append(
-    #         {
-    #             "user": user,
-    #             "title": f"Tarea 1 en {department.name}",
-    #             "description": f"Descripción de la tarea 1 en {department.name}",
-    #             "department": department,
-    #             "company": Company.objects.get(pk=company_id),
-    #             "status": task_status,
-    #             "hours": timedelta(hours=2),
-    #         }
-    #     )
-    #     data_task.append(
-    #         {
-    #             "user": user,
-    #             "title": f"Tarea 2 en {department.name}",
-    #             "description": f"Descripción de la tarea 2 en {department.name}",
-    #             "department": department,
-    #             "company": Company.objects.get(pk=company_id),
-    #             "status": task_status,
-    #             "hours": timedelta(hours=3),
-    #         }
-    #     )
-    #     company_id += 1
-    # load_data(
-    #     data_task,
-    #     model=Task,
-    #     message=["Creating Task", "Tasks successfully created"],
-    # )
 
 
 if __name__ == "__main__":
