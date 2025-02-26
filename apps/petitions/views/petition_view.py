@@ -34,58 +34,105 @@ from petitions.serializers import (
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
+# Custom Permissions
+from core.permissions import IsAdmin, IsManager, IsClient, IsEmployee, CanViewPetition
+from core.functions import filter_queryset_by_group
+
 
 class PetitionListView(ListAPIView):
+    """Vista para listar peticiones con filtros avanzados."""
+
     queryset = Petition.active_objects.all()
-    serializer_class = PetitionModelserializer
-    permission_classes = [IsAuthenticated]
+    serializer_class = PetitionFullDetailserializer
+    permission_classes = [IsAuthenticated, CanViewPetition]
 
     @swagger_auto_schema(
         manual_parameters=[
             openapi.Parameter(
                 "Authorization",
                 openapi.IN_HEADER,
-                description="Token de autenticación. Usar el formato 'Token <access_token>'",
+                description="Token de autenticación. Usar el formato 'Token <ACCESS_TOKEN>'",
                 type=openapi.TYPE_STRING,
                 required=True,
                 default="Token <ACCESS_TOKEN>",
             ),
+            openapi.Parameter(
+                "date_from",
+                openapi.IN_QUERY,
+                description="Filtrar peticiones desde esta fecha (YYYY-MM-DD).",
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "date_until",
+                openapi.IN_QUERY,
+                description="Filtrar peticiones hasta esta fecha (YYYY-MM-DD).",
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "title",
+                openapi.IN_QUERY,
+                description="Buscar peticiones por título.",
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "user_id",
+                openapi.IN_QUERY,
+                description="Filtrar por usuario específico.",
+                type=openapi.TYPE_INTEGER,
+            ),
+            openapi.Parameter(
+                "department_id",
+                openapi.IN_QUERY,
+                description="Filtrar por departamento específico.",
+                type=openapi.TYPE_INTEGER,
+            ),
+            openapi.Parameter(
+                "company_id",
+                openapi.IN_QUERY,
+                description="Filtrar por empresa específica.",
+                type=openapi.TYPE_INTEGER,
+            ),
         ],
-        responses={200: PetitionModelserializer(many=True)},
+        responses={200: PetitionFullDetailserializer(many=True)},
     )
     def get_queryset(self):
+        """Obtiene el queryset de peticiones aplicando filtros avanzados."""
+
+        user = self.request.user  # Obtener usuario autenticado
         queryset = super().get_queryset()
-        date_from = self.request.query_params.get("date_from", None)
-        date_until = self.request.query_params.get("date_until", None)
-        title = self.request.query_params.get("title", None)
-        user_id = self.request.query_params.get("user_id", None)
-        department_id = self.request.query_params.get("department_id", None)
-        company_id = self.request.query_params.get("company_id", None)
+
+        # Aplicar filtro de grupo antes de los filtros adicionales
+        queryset = filter_queryset_by_group(queryset, user)
+
+        # Filtros por query params
+        date_from = self.request.query_params.get("date_from")
+        date_until = self.request.query_params.get("date_until")
+        title = self.request.query_params.get("title")
+        user_id = self.request.query_params.get("user_id")
+        department_id = self.request.query_params.get("department_id")
+        company_id = self.request.query_params.get("company_id")
 
         if user_id:
-            user = get_object_or_404(User, pk=user_id)
             queryset = queryset.filter(user__id=user_id)
 
         if department_id:
-            department = get_object_or_404(Department, pk=department_id)
             queryset = queryset.filter(department__id=department_id)
 
         if company_id:
-            company = get_object_or_404(Company, pk=company_id)
             queryset = queryset.filter(company__id=company_id)
 
         if title:
             queryset = queryset.filter(title__icontains=title)
 
         if date_from:
-            date_from = parse_date(date_from)
-            if date_from:
-                queryset = queryset.filter(created__gte=date_from)
+            parsed_date = parse_date(date_from)
+            if parsed_date:
+                queryset = queryset.filter(created__gte=parsed_date)
 
         if date_until:
-            date_until = parse_date(date_until)
-            if date_until:
-                queryset = queryset.filter(created__lte=date_until)
+            parsed_date = parse_date(date_until)
+            if parsed_date:
+                queryset = queryset.filter(created__lte=parsed_date)
 
         return queryset
 
@@ -94,7 +141,7 @@ class PetitionDetailView(RetrieveAPIView):
 
     queryset = Petition.active_objects.all()
     serializer_class = PetitionFullDetailserializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, CanViewPetition]
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -163,7 +210,7 @@ class PetitionDeleteView(DestroyAPIView):
 
     queryset = Petition.active_objects.all()
     serializer_class = PetitionModelserializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, CanViewPetition]
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -204,7 +251,7 @@ class PetitionDeleteView(DestroyAPIView):
 class PetitionCreateView(CreateAPIView):
     queryset = Petition.active_objects.all()
     serializer_class = PetitionCreateSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, CanViewPetition]
 
     @swagger_auto_schema(
         manual_parameters=[
