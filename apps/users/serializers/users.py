@@ -4,6 +4,7 @@
 from django.contrib.auth import password_validation, authenticate
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.contrib.auth.models import Group
 from django.conf import settings
 from django.utils import timezone
 
@@ -20,16 +21,29 @@ from users.models import User
 import jwt
 from datetime import timedelta
 
-# SErializers
+# Serializers
 from .human_resourse import HumanResourceModelSerializer
+
+
+class GroupSerializer(serializers.ModelSerializer):
+    """Serializador de grupos."""
+
+    class Meta:
+        model = Group
+        fields = ["id", "name"]
+
 
 class UserModelSerializer(serializers.ModelSerializer):
     """User model serializer."""
 
-    human_resource = HumanResourceModelSerializer(read_only=True)
+    human_resource = HumanResourceModelSerializer(
+        read_only=True
+    )  # Agregar Human Resource
+    groups = GroupSerializer(many=True, read_only=True)  # Agregar grupos
 
     class Meta:
         """Meta class."""
+
         model = User
         fields = [
             "id",
@@ -40,8 +54,10 @@ class UserModelSerializer(serializers.ModelSerializer):
             "is_staff",
             "is_active",
             "is_verified",
-            "human_resource",
+            "human_resource",  # Devolver human resource al frontend
+            "groups",  # Devolver grupos al frontend
         ]
+
 
 class UserSingUpSerializer(serializers.Serializer):
     """User sign up model serializer.
@@ -104,12 +120,13 @@ class UserSingUpSerializer(serializers.Serializer):
         """Create JWT token that the user can use to verify its account."""
         exp_date = timezone.now() + timedelta(days=3)
         payload = {
-            'user': user.username,
-            'exp': int(exp_date.timestamp()),
-            'type': 'email_confirmation'
+            "user": user.username,
+            "exp": int(exp_date.timestamp()),
+            "type": "email_confirmation",
         }
-        token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+        token = jwt.encode(payload, settings.SECRET_KEY, algorithm="HS256")
         return token
+
 
 class UserLoginSerializer(serializers.Serializer):
     """User Login Serializer.
@@ -137,28 +154,30 @@ class UserLoginSerializer(serializers.Serializer):
         token, created = Token.objects.get_or_create(user=self.context["user"])
         return self.context["user"], token.key
 
+
 class AccountVerificationSerializer(serializers.Serializer):
     """Account verification serializer."""
+
     token = serializers.CharField()
 
     def validate_token(self, data):
         """Verify token is valid."""
         try:
-            payload = jwt.decode(data, settings.SECRET_KEY, algorithms=['HS256'])
+            payload = jwt.decode(data, settings.SECRET_KEY, algorithms=["HS256"])
         except jwt.exceptions.ExpiredSignatureError:
-            raise serializers.ValidationError('Verification link has expired.')
+            raise serializers.ValidationError("Verification link has expired.")
         except jwt.exceptions.PyJWTError:
-            raise serializers.ValidationError('Invalid token.')
-        
-        if payload['type'] != 'email_confirmation':
-            raise serializers.ValidationError('Invalid token.')
-        
-        self.context['payload'] = payload        
+            raise serializers.ValidationError("Invalid token.")
+
+        if payload["type"] != "email_confirmation":
+            raise serializers.ValidationError("Invalid token.")
+
+        self.context["payload"] = payload
         return data
 
     def save(self):
         """Update user's verified status."""
-        payload = self.context['payload']
-        user = User.objects.get(username=payload['user'])
+        payload = self.context["payload"]
+        user = User.objects.get(username=payload["user"])
         user.is_verified = True
         user.save()
