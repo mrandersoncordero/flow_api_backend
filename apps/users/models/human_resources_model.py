@@ -1,6 +1,7 @@
 """Human resources model."""
 
 # Django
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.conf import settings
 
@@ -39,6 +40,16 @@ class HumanResource(MainModel, models.Model):
     phone_number = models.CharField(max_length=20, blank=True)
 
     picture = models.ImageField(upload_to="users/pictures", blank=True, null=True)
+
+    def clean(self):
+        """Evitar que los clientes (`Client`) tengan un departamento asignado."""
+        if self.user.groups.filter(name="Client").exists() and self.department is not None:
+            raise ValidationError("Los clientes no pueden tener un departamento asignado.")
+
+    def save(self, *args, **kwargs):
+        """Ejecuta la validación antes de guardar."""
+        self.clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"

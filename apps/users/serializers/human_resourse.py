@@ -8,6 +8,15 @@ class HumanResourceModelSerializer(serializers.ModelSerializer):
         model = HumanResource
         fields = '__all__'
 
+    def validate(self, data):
+        """Evitar que los clientes (`Client`) tengan un departamento asignado."""
+        user = self.instance.user if self.instance else data.get("user")
+        
+        if user.groups.filter(name="Client").exists() and data.get("department") is not None:
+            raise serializers.ValidationError({"department": "Los clientes no pueden tener un departamento asignado."})
+
+        return data
+    
     def update(self, instance, validated_data):
         """Evitar que se intente modificar el usuario."""
         validated_data.pop(
@@ -40,6 +49,15 @@ class HumanResourceCreateSerializer(serializers.ModelSerializer):
         self.context["user"] = user
         return value
 
+    def validate(self, data):
+        """Evitar que los clientes (`Client`) tengan un departamento asignado."""
+        user = self.instance.user if self.instance else data.get("user")
+        
+        if user.groups.filter(name="Client").exists() and data.get("department") is not None:
+            raise serializers.ValidationError({"department": "Los clientes no pueden tener un departamento asignado."})
+
+        return data
+    
     def create(self, validated_data):
         """Crear un HumanResource asociado al usuario."""
         user = self.context["user"]
