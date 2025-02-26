@@ -13,7 +13,9 @@ from .views import (
     UserUpdateView,
     UserDeleteView,
     HumanResourceCreateAPIView,
-    HumanResourceDetailUpdateAPIView
+    HumanResourceDetailUpdateAPIView,
+    AddUserToGroupView,
+    RemoveUserFromGroupView,
 )
 
 app_name = "users"
@@ -24,9 +26,22 @@ urlpatterns = [
     path("users/verify/", AccountVerificationAPIView.as_view(), name="verify"),
     path("users/", UserListView.as_view(), name="user-list"),  # GET All
     path("users/<int:pk>/", UserDetailView.as_view(), name="user-detail"),  # GET by ID
-    path("users/<int:pk>/update/", UserUpdateView.as_view(), name="user-update"),  # PUT / PATCH
-    path("users/<int:pk>/delete/", UserDeleteView.as_view(), name="user-delete"),  # DELETE
-
+    path(
+        "users/<int:pk>/update/", UserUpdateView.as_view(), name="user-update"
+    ),  # PUT / PATCH
+    path(
+        "users/<int:pk>/delete/", UserDeleteView.as_view(), name="user-delete"
+    ),  # DELETE
+    path(
+        "users/<int:user_id>/add-to-group/<str:group_name>/",
+        AddUserToGroupView.as_view(),
+        name="add-to-group",
+    ),
+    path(
+        "users/<int:user_id>/remove-from-group/<str:group_name>/",
+        RemoveUserFromGroupView.as_view(),
+        name="remove-from-group",
+    ),
     path(
         "human-resources/",
         HumanResourceCreateAPIView.as_view(),

@@ -1,8 +1,9 @@
 """Users views."""
 
 # Django
-from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import Group
 
 # Django REST Framework
 from rest_framework import status
@@ -30,6 +31,10 @@ from users.serializers import (
 # DRF Yasg
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+
+# Custom Permissions
+from core.permissions import IsAdmin, IsManager, IsClient, IsEmployee
+from core.functions import filter_queryset_user_by_group
 
 
 class UserLoginAPIView(APIView):
@@ -101,7 +106,7 @@ class UserListView(ListAPIView):
 
     queryset = User.objects.all()
     serializer_class = UserModelSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdmin | IsClient | IsManager | IsEmployee]
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -136,10 +141,14 @@ class UserListView(ListAPIView):
     )
     def get_queryset(self):
         """Filtrar usuarios por email, estado activo y verificado."""
+        user = self.request.user  # Obtener usuario autenticado
         queryset = super().get_queryset()
+        
         email = self.request.query_params.get("email")
         active = self.request.query_params.get("active")
         verified = self.request.query_params.get("verified")
+        group = self.request.query_params.get("group")
+        exclude_group_name = self.request.query_params.get("exclude_group")
 
         if email:
             queryset = queryset.filter(email__icontains=email)
@@ -147,8 +156,14 @@ class UserListView(ListAPIView):
             queryset = queryset.filter(is_active=active.lower() == "true")
         if verified is not None:
             queryset = queryset.filter(is_verified=verified.lower() == "true")
-
-        return queryset
+        # Filtrar por grupo
+        if group:
+            queryset = queryset.filter(groups__name=group)
+        # Excluir usuarios de un grupo
+        if exclude_group_name:
+            queryset = queryset.exclude(groups__name=exclude_group_name)
+        
+        return queryset.distinct()
 
 
 ### 🔹 2. GET by ID (Detalle de usuario) ###
@@ -332,3 +347,133 @@ class UserAPIView(APIView):
 
         serializer = UserModelSerializer(queryset, many=True)
         return Response(serializer.data)
+
+
+class AddUserToGroupView(APIView):
+    """Agrega un usuario a un grupo."""
+
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Agrega un usuario a un grupo específico.",
+        manual_parameters=[
+            openapi.Parameter(
+                "Authorization",
+                openapi.IN_HEADER,
+                description="Token de autenticación. Usar el formato 'Token <access_token>'",
+                type=openapi.TYPE_STRING,
+                required=True,
+                default="Token <ACCESS_TOKEN>",
+            ),
+        ],
+        responses={
+            200: openapi.Response(
+                "Usuario agregado correctamente",
+                openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "message": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            example="Usuario juan@example.com agregado al grupo Admin.",
+                        )
+                    },
+                ),
+            ),
+            404: openapi.Response(
+                "Usuario no encontrado",
+                openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "error": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            example="No se encontró el usuario o el grupo.",
+                        )
+                    },
+                ),
+            ),
+        },
+    )
+    def post(self, request, user_id, group_name):
+        """Asigna un usuario a un grupo."""
+        user = get_object_or_404(User, id=user_id)
+        group, created = Group.objects.get_or_create(name=group_name)
+        user.groups.add(group)
+
+        return Response(
+            {"message": f"Usuario {user.email} agregado al grupo {group_name}."},
+            status=status.HTTP_200_OK,
+        )
+
+
+class RemoveUserFromGroupView(APIView):
+    """Elimina un usuario de un grupo."""
+
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Elimina un usuario de un grupo específico.",
+        manual_parameters=[
+            openapi.Parameter(
+                "Authorization",
+                openapi.IN_HEADER,
+                description="Token de autenticación. Usar el formato 'Token <access_token>'",
+                type=openapi.TYPE_STRING,
+                required=True,
+                default="Token <ACCESS_TOKEN>",
+            ),
+        ],
+        responses={
+            200: openapi.Response(
+                "Usuario eliminado correctamente",
+                openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "message": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            example="Usuario juan@example.com eliminado del grupo Admin.",
+                        )
+                    },
+                ),
+            ),
+            400: openapi.Response(
+                "Error: El usuario no pertenece al grupo",
+                openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "error": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            example="El usuario juan@example.com no está en el grupo Admin.",
+                        )
+                    },
+                ),
+            ),
+            404: openapi.Response(
+                "Usuario o grupo no encontrado",
+                openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "error": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            example="No se encontró el usuario o el grupo.",
+                        )
+                    },
+                ),
+            ),
+        },
+    )
+    def delete(self, request, user_id, group_name):
+        """Elimina un usuario de un grupo."""
+        user = get_object_or_404(User, id=user_id)
+        group = get_object_or_404(Group, name=group_name)
+
+        if group in user.groups.all():
+            user.groups.remove(group)
+            return Response(
+                {"message": f"Usuario {user.email} eliminado del grupo {group_name}."},
+                status=status.HTTP_200_OK,
+            )
+
+        return Response(
+            {"error": f"El usuario {user.email} no está en el grupo {group_name}."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
