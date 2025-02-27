@@ -29,11 +29,14 @@ from petitions.serializers import CompanySerializer, CompanyCreateSerializer
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
+# Custom Permissions
+from core.permissions import IsAdmin, IsManager, IsEmployee, IsClient
+
 
 class CompanyListView(ListAPIView):
     queryset = Company.active_objects.all()
     serializer_class = CompanySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdmin | IsManager | IsEmployee | IsClient]
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -55,7 +58,7 @@ class CompanyListView(ListAPIView):
 class CompanyDetailView(RetrieveAPIView):
     queryset = Company.active_objects.all()
     serializer_class = CompanySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -77,7 +80,7 @@ class CompanyDetailView(RetrieveAPIView):
 class CompanyUpdateView(UpdateAPIView):
     queryset = Company.active_objects.all()
     serializer_class = CompanySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -123,7 +126,7 @@ class CompanyUpdateView(UpdateAPIView):
 class CompanyDeleteView(DestroyAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -181,7 +184,7 @@ class CompanyDeleteView(DestroyAPIView):
 class CompanyCreateView(CreateAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanyCreateSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     @swagger_auto_schema(
         manual_parameters=[

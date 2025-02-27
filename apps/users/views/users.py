@@ -172,7 +172,7 @@ class UserDetailView(RetrieveAPIView):
 
     queryset = User.objects.all()
     serializer_class = UserModelSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -197,7 +197,7 @@ class UserUpdateView(UpdateAPIView):
 
     queryset = User.objects.all()
     serializer_class = UserModelSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -241,7 +241,7 @@ class UserUpdateView(UpdateAPIView):
 
 
 ### 🔹 4. DELETE (Eliminar usuario) ###
-class UserDeleteView(DestroyAPIView):
+class UserDeleteView(DestroyAPIView, IsAdmin):
     """Elimina un usuario."""
 
     queryset = User.objects.all()
@@ -285,7 +285,7 @@ class UserDeleteView(DestroyAPIView):
 class UserAPIView(APIView):
     """Retrieve a user or list users"""
 
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -352,7 +352,7 @@ class UserAPIView(APIView):
 class AddUserToGroupView(APIView):
     """Agrega un usuario a un grupo."""
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     @swagger_auto_schema(
         operation_description="Agrega un usuario a un grupo específico.",
@@ -408,7 +408,7 @@ class AddUserToGroupView(APIView):
 class RemoveUserFromGroupView(APIView):
     """Elimina un usuario de un grupo."""
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     @swagger_auto_schema(
         operation_description="Elimina un usuario de un grupo específico.",

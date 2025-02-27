@@ -12,11 +12,14 @@ from users.serializers.human_resourse import (
 )
 
 
+# Custom Permissions
+from core.permissions import IsAdmin, IsManager, IsClient, IsEmployee
+
 class HumanResourceCreateAPIView(CreateAPIView):
     """API para crear un perfil de HumanResource."""
 
     serializer_class = HumanResourceCreateSerializer
-    permission_classes = [IsAuthenticated]  # Solo usuarios autenticados pueden crear HR
+    permission_classes = [IsAuthenticated, IsAdmin]  # Solo usuarios autenticados pueden crear HR
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -40,7 +43,7 @@ class HumanResourceDetailUpdateAPIView(RetrieveUpdateAPIView):
     """API para obtener o actualizar el perfil de HumanResource del usuario autenticado."""
 
     serializer_class = HumanResourceModelSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     def get_object(self):
         """Retorna el perfil de HumanResource del usuario autenticado."""

@@ -210,7 +210,7 @@ class PetitionDeleteView(DestroyAPIView):
 
     queryset = Petition.active_objects.all()
     serializer_class = PetitionModelserializer
-    permission_classes = [IsAuthenticated, CanViewPetition]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     @swagger_auto_schema(
         manual_parameters=[

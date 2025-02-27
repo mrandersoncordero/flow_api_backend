@@ -28,11 +28,13 @@ from petitions.serializers import DepartmentSerializer, DepartmentCreateSerializ
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
+# Custom Permissions
+from core.permissions import IsAdmin, IsManager, IsEmployee, IsClient
 
 class DepartmentListView(ListAPIView):
     queryset = Department.active_objects.all()
     serializer_class = DepartmentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdmin | IsManager | IsEmployee | IsClient]
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -54,7 +56,7 @@ class DepartmentListView(ListAPIView):
 class DepartmentDetailView(RetrieveAPIView):
     queryset = Department.active_objects.all()
     serializer_class = DepartmentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -76,7 +78,7 @@ class DepartmentDetailView(RetrieveAPIView):
 class DepartmentUpdateView(UpdateAPIView):
     queryset = Department.active_objects.all()
     serializer_class = DepartmentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -122,7 +124,7 @@ class DepartmentUpdateView(UpdateAPIView):
 class DepartmentDeleteView(DestroyAPIView):
     queryset = Department.objects.all()  # 🔥 Permite encontrar eliminados
     serializer_class = DepartmentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -172,7 +174,7 @@ class DepartmentDeleteView(DestroyAPIView):
 class DepartmentCreateView(CreateAPIView):
     queryset = Department.objects.all()
     serializer_class = DepartmentCreateSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     @swagger_auto_schema(
         manual_parameters=[
