@@ -70,7 +70,7 @@ class PetitionAdmin(admin.ModelAdmin):
                     "title",
                     "description",
                     ("status_approval", "priority"),
-                    ("active", "department"),
+                    ("active", "department", "company"),
                     ("user", "is_main"),
                 ),
             },
