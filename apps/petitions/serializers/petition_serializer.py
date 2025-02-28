@@ -8,7 +8,7 @@ from petitions.models import Petition, Department, Company
 from users.models import User
 
 # Serializers
-from users.serializers import UserModelSerializer
+from users.serializers import UserModelSerializer, ClientCompanySerializer
 from commissions.serializers import CommissionSerializer
 from .department_serializer import DepartmentSerializer
 from .company_serializer import CompanySerializer
@@ -21,6 +21,7 @@ class PetitionFullDetailserializer(serializers.ModelSerializer):
 
     user = UserModelSerializer(read_only=True)
     company = CompanySerializer(read_only=True)
+    client_companies = ClientCompanySerializer(read_only=True)
     department = DepartmentSerializer(read_only=True)
     commissions = CommissionSerializer(many=True, read_only=True)
 
@@ -41,6 +42,7 @@ class PetitionFullDetailserializer(serializers.ModelSerializer):
             "commissions",
             "active",
             "hours",
+            "client_companies",
             "start_date",
             "end_date",
             "created",

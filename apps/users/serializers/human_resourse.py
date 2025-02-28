@@ -1,12 +1,34 @@
 from rest_framework import serializers
-from users.models import HumanResource, User
+from users.models import HumanResource, User, ClientCompany
+
+# ClientCompany Serilizer
+class ClientCompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ClientCompany
+        fields = '__all__'
+
 
 class HumanResourceModelSerializer(serializers.ModelSerializer):
     """Serializer para el modelo de HumanResource."""
 
+    client_companies = ClientCompanySerializer(many=True, read_only=True)
+
     class Meta:
         model = HumanResource
-        fields = '__all__'
+        fields = [
+            "id",
+            "created",
+            "modified",
+            "deleted",
+            "active",
+            "department",
+            "company",
+            "biography",
+            "phone_number",
+            "picture",
+            "user",
+            "client_companies",
+        ]
 
     def validate(self, data):
         """Evitar que los clientes (`Client`) tengan un departamento asignado."""

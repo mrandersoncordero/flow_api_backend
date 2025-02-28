@@ -13,6 +13,9 @@ def filter_queryset_by_group(queryset, user):
         return queryset.filter(id=user.id)  # 🔥 Employees solo ven su propio perfil
 
     elif user.groups.filter(name="Client").exists():
+        client_companies = user.human_resource.client_companies.values_list("company", flat=True)
+        if client_companies.exists():
+            return queryset.filter(company__in=client_companies)  # 🔥 Múltiples empresas
         return queryset.filter(
             company__id=user.human_resource.company.id
         )

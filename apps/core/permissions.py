@@ -1,5 +1,5 @@
 from rest_framework.permissions import BasePermission
-
+from petitions.models import Petition
 
 class CanViewPetition(BasePermission):
     """Permiso para permitir acceso a peticiones según el grupo."""
@@ -21,7 +21,12 @@ class CanViewPetition(BasePermission):
             return obj.user == user # Employees y Clients solo ven sus propias peticiones
 
         if user.groups.filter(name="Client").exists():
+            # 🔥 Verificar si el cliente tiene varias empresas
+            client_companies = user.human_resource.client_companies.values_list("company", flat=True)
+            if client_companies.exists():
+                return obj.company_id in client_companies
             return obj.company == user.human_resource.company
+        
         return False  # Si no pertenece a un grupo válido, no tiene acceso
 
 
