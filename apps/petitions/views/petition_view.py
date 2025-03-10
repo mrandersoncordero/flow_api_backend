@@ -1,8 +1,7 @@
 """Petition views."""
 
 # Django
-from django.shortcuts import get_object_or_404
-from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.utils.dateparse import parse_date
 
 # Django REST Framework
@@ -101,40 +100,47 @@ class PetitionListView(ListAPIView):
         user = self.request.user  # Obtener usuario autenticado
         queryset = super().get_queryset()
 
-        # Aplicar filtro de grupo antes de los filtros adicionales
-        queryset = filter_queryset_by_group(queryset, user)
+        queryset = filter_queryset_by_group(super().get_queryset(), user)  # 🔥 Aplicar filtro por grupo
 
-        # Filtros por query params
-        date_from = self.request.query_params.get("date_from")
-        date_until = self.request.query_params.get("date_until")
+        # 🔥 Diccionario para aplicar filtros dinámicos
+        filter_kwargs = {}
+
+        # 📌 Filtros directos
+        if self.request.query_params.get("user_email"):
+            filter_kwargs["user__email"] = self.request.query_params["user_email"]
+
+        if self.request.query_params.get("department"):
+            filter_kwargs["department__id"] = self.request.query_params["department"]
+
+        if self.request.query_params.get("company"):
+            filter_kwargs["company__id"] = self.request.query_params["company"]
+
+        if self.request.query_params.get("status_approval"):
+            filter_kwargs["status_approval"] = self.request.query_params["status_approval"]
+
+        # 📌 Filtros con búsqueda parcial
         title = self.request.query_params.get("title")
-        user_id = self.request.query_params.get("user_id")
-        department_id = self.request.query_params.get("department_id")
-        company_id = self.request.query_params.get("company_id")
-
-        if user_id:
-            queryset = queryset.filter(user__id=user_id)
-
-        if department_id:
-            queryset = queryset.filter(department__id=department_id)
-
-        if company_id:
-            queryset = queryset.filter(company__id=company_id)
-
         if title:
-            queryset = queryset.filter(title__icontains=title)
+            queryset = queryset.filter(Q(title__icontains=title))  # 🔥 Buscar en el título
 
+        # 📌 Filtros de rango de fechas
+        date_from = self.request.query_params.get("date_from")
         if date_from:
             parsed_date = parse_date(date_from)
+            print('parsed_date => ',parsed_date)
             if parsed_date:
-                queryset = queryset.filter(created__gte=parsed_date)
+                filter_kwargs["created__gte"] = parsed_date
 
+        date_until = self.request.query_params.get("date_until")
         if date_until:
             parsed_date = parse_date(date_until)
             if parsed_date:
-                queryset = queryset.filter(created__lte=parsed_date)
+                filter_kwargs["created__lte"] = parsed_date
 
-        return queryset
+        # 🔥 Aplicar todos los filtros en una sola operación
+        print(filter_kwargs)
+        print('QUERY => ',queryset.filter(**filter_kwargs).query)
+        return queryset.filter(**filter_kwargs)
 
 
 class PetitionDetailView(RetrieveAPIView):
