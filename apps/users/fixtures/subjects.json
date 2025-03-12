@@ -1,0 +1,58 @@
+[
+{
+  "model": "users.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$870000$ztD9TPmSYzgQLchz7KdBxw$43g5/ussFmdIBTBOHFyHYQXoUvBvBwwMgPtxg0r0nAk=",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "Administrator",
+    "last_name": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-02-12T13:19:59.955Z",
+    "created": "2025-02-12T13:20:00.831Z",
+    "modified": "2025-02-12T13:20:00.838Z",
+    "email": "admin@email.com",
+    "is_verified": true,
+    "last_login": "2025-02-12T13:20:35.922Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.user",
+  "pk": 2,
+  "fields": {
+    "password": "",
+    "is_superuser": false,
+    "username": "test",
+    "first_name": "Jhon",
+    "last_name": "Dae",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-02-12T13:20:00.845Z",
+    "created": "2025-02-12T13:20:00.845Z",
+    "modified": "2025-02-12T13:20:00.850Z",
+    "email": "test@email.com",
+    "is_verified": true,
+    "last_login": "2025-02-12T13:20:00.850Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.humanresource",
+  "pk": 1,
+  "fields": {
+    "created": "2025-02-12T13:20:00.856Z",
+    "modified": "2025-02-12T13:20:00.861Z",
+    "deleted": null,
+    "active": true,
+    "user": 2,
+    "biography": "Biografia del usuario test.",
+    "phone_number": "9898989898",
+    "picture": ""
+  }
+}
+]
