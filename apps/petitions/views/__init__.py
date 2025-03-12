@@ -21,3 +21,5 @@ from .company_view import (
     CompanyDeleteView,
     CompanyCreateView
 )
+
+from .notification_view import *

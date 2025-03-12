@@ -20,6 +20,8 @@ from .views import (
     CompanyUpdateView,
     CompanyDeleteView,
     CompanyCreateView,
+    NotificationListView,
+    NotificationMarkAsReadView,
 )
 
 app_name = "petitions"
@@ -92,4 +94,7 @@ urlpatterns = [
         CompanyDeleteView.as_view(),
         name="company-delete",
     ),
+
+    path("notifications/", NotificationListView.as_view(), name="notification-list"),
+    path("notifications/<int:pk>/read/", NotificationMarkAsReadView.as_view(), name="notification-mark-as-read"),
 ]
