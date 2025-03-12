@@ -186,12 +186,10 @@ def main():
             user=user,
             biography=f"Biografia del usuario {user.username}.",
             phone_number="9898989898",
-            department=Department.objects.get(pk=5),
             company=Company.objects.get(pk=1),
         )
         if "client" in user.username:
             human_resource.company = Company.objects.get(pk=2)
-            human_resource.department = None
         else:
             human_resource.company = Company.objects.get(pk=1)
             human_resource.department = Department.objects.get(pk=5)
