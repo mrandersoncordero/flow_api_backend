@@ -127,7 +127,6 @@ class PetitionListView(ListAPIView):
         date_from = self.request.query_params.get("date_from")
         if date_from:
             parsed_date = parse_date(date_from)
-            print('parsed_date => ',parsed_date)
             if parsed_date:
                 filter_kwargs["created__gte"] = parsed_date
 
@@ -138,8 +137,6 @@ class PetitionListView(ListAPIView):
                 filter_kwargs["created__lte"] = parsed_date
 
         # 🔥 Aplicar todos los filtros en una sola operación
-        print(filter_kwargs)
-        print('QUERY => ',queryset.filter(**filter_kwargs).query)
         return queryset.filter(**filter_kwargs)
 
 
