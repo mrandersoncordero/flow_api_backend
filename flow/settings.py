@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 import sys
 from pathlib import Path
-import dj_database_url
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 # Agregar la carpeta "apps" al PATH de Python
-sys.path.insert(0, str(BASE_DIR / 'apps'))
+sys.path.insert(0, str(BASE_DIR / "apps"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -51,23 +50,28 @@ DJANGO_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "whitenoise.runserver_nostatic",
 ]
 
-THIRD_PARTY_APPS = ["rest_framework", "rest_framework.authtoken", "drf_yasg"]
+THIRD_PARTY_APPS = [
+    "rest_framework",
+    "rest_framework.authtoken",
+    "drf_yasg",
+    "debug_toolbar",
+    "dal",
+    "dal_select2",
+]
 
 LOCAL_APPS = [
     "users.apps.UsersConfig",
     "commissions.apps.CommissionsConfig",
-    "petitions.apps.PetitionsConfig"
-    # "tasks.apps.TasksConfig"
+    "petitions.apps.PetitionsConfig",
+    "api.apps.ApiConfig",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -75,6 +79,10 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+if DEBUG:
+    THIRD_PARTY_APPS += ["debug_toolbar"]
+    MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware", *MIDDLEWARE]
 
 ROOT_URLCONF = "flow.urls"
 
@@ -101,9 +109,9 @@ WSGI_APPLICATION = "flow.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 
@@ -130,23 +138,17 @@ AUTH_PASSWORD_VALIDATORS = [
 EMAIL_BACKEND = os.environ.get(
     "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
 )
-# ANYMAIL = {
-#     "EMAIL_BACKEND": os.environ.get(
-#         "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
-#     ),  # Configuración para SMTP
-# }
-
-EMAIL_HOST = os.environ.get("EMAIL_HOST")
-EMAIL_PORT = os.environ.get("EMAIL_PORT")
-EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS")
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.example.com")
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 587))
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "true").lower() in ("true", "1", "yes")
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
-DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  # Usar el mismo email para enviar
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = "es-es"
+LANGUAGE_CODE = "es"
 
 TIME_ZONE = "America/Caracas"
 
@@ -160,7 +162,9 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
 
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
@@ -169,13 +173,6 @@ STATICFILES_FINDERS = [
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-
-STORAGES = {
-    # ...
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -189,7 +186,7 @@ SWAGGER_SETTINGS = {
             "type": "apiKey",
             "name": "Authorization",
             "in": "header",
-            "description": "Añadir 'Token <ACCESS_TOKEN>' en el header"
+            "description": "Añadir 'Token <ACCESS_TOKEN>' en el header",
         }
     },
     "USE_SESSION_AUTH": False,  # Evita que intente autenticarse con sesión de Django
@@ -207,4 +204,4 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 10,
 }
 
-CSRF_TRUSTED_ORIGINS = ["https://api-task-flow-production.up.railway.app"]
+# CSRF_TRUSTED_ORIGINS = ["https://api-task-flow-production.up.railway.app"]
