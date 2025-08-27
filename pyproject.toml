@@ -1,0 +1,10 @@
+[tool.ruff]
+lint.extend-select = [
+    'T201',
+    'DJ001',
+    'DJ003',
+    'DJ006',
+    'DJ007',
+    'DJ008',
+    'DJ012'
+]
