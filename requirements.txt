@@ -6,6 +6,8 @@ decorator==5.1.1
 dj-database-url==2.3.0
 Django==5.1
 django-anymail==11.1
+django-autocomplete-light==3.12.1
+django-debug-toolbar==6.0.0
 djangorestframework==3.15.2
 drf-yasg==1.21.8
 exceptiongroup==1.2.2
@@ -22,7 +24,6 @@ parso==0.8.4
 pexpect==4.9.0
 pillow==11.1.0
 prompt_toolkit==3.0.47
-psycopg2==2.9.10
 psycopg2-binary==2.9.10
 ptyprocess==0.7.0
 pure_eval==0.2.3
