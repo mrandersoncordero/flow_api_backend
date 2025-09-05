@@ -21,8 +21,7 @@ class User(BaseModel, AbstractUser):
         error_messages={"unique": "A user with that email already exists."},
     )
 
-    USERNAME_FIELD: str = "email"
-    REQUIRED_FIELDS = ["username", "first_name", "last_name"]
+    REQUIRED_FIELDS = ["email", "first_name", "last_name"]
 
     is_verified = models.BooleanField(
         "verified",
