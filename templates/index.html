@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<!-- Header -->
+<header class="bg-card border-b border-border px-6 py-4">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-semibold">Dashboard</h1>
+            <p class="text-muted-foreground">Bienvenido de vuelta, John</p>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div class="relative">
+                <input type="text" placeholder="Buscar..."
+                    class="bg-input border border-border rounded-md px-3 py-2 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-ring">
+                <svg class="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+            <button class="relative p-2 text-muted-foreground hover:text-foreground">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5z"></path>
+                </svg>
+                <span
+                    class="absolute -top-1 -right-1 h-4 w-4 bg-primary rounded-full text-xs text-primary-foreground flex items-center justify-center">3</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Dashboard Content -->
+<main class="p-6">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-card border border-border rounded-lg p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-muted-foreground text-sm">Total Tareas</p>
+                    <p class="text-2xl font-semibold" id="totalTasks">24</p>
+                </div>
+                <div class="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+            <p class="text-xs text-muted-foreground mt-2">+12% desde el mes pasado</p>
+        </div>
+
+        <div class="bg-card border border-border rounded-lg p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-muted-foreground text-sm">Usuarios Activos</p>
+                    <p class="text-2xl font-semibold" id="activeUsers">18</p>
+                </div>
+                <div class="h-12 w-12 bg-green-500/10 rounded-lg flex items-center justify-center">
+                    <svg class="h-6 w-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+            <p class="text-xs text-muted-foreground mt-2">+3 nuevos esta semana</p>
+        </div>
+
+        <div class="bg-card border border-border rounded-lg p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-muted-foreground text-sm">Empresas</p>
+                    <p class="text-2xl font-semibold" id="totalCompanies">5</p>
+                </div>
+                <div class="h-12 w-12 bg-blue-500/10 rounded-lg flex items-center justify-center">
+                    <svg class="h-6 w-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+            <p class="text-xs text-muted-foreground mt-2">2 departamentos promedio</p>
+        </div>
+
+        <div class="bg-card border border-border rounded-lg p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-muted-foreground text-sm">Notificaciones</p>
+                    <p class="text-2xl font-semibold" id="totalNotifications">7</p>
+                </div>
+                <div class="h-12 w-12 bg-yellow-500/10 rounded-lg flex items-center justify-center">
+                    <svg class="h-6 w-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5z">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+            <p class="text-xs text-muted-foreground mt-2">3 sin leer</p>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div class="bg-card border border-border rounded-lg p-6">
+            <h3 class="text-lg font-semibold mb-4">Acciones Rápidas</h3>
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="window.location.href='tasks.html'"
+                    class="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-3 rounded-md text-sm font-medium transition-colors">
+                    Nueva Tarea
+                </button>
+                <button onclick="window.location.href='users.html'"
+                    class="bg-secondary hover:bg-secondary/80 text-secondary-foreground px-4 py-3 rounded-md text-sm font-medium transition-colors">
+                    Nuevo Usuario
+                </button>
+                <button onclick="window.location.href='companies.html'"
+                    class="bg-secondary hover:bg-secondary/80 text-secondary-foreground px-4 py-3 rounded-md text-sm font-medium transition-colors">
+                    Nueva Empresa
+                </button>
+                <button onclick="window.location.href='departments.html'"
+                    class="bg-secondary hover:bg-secondary/80 text-secondary-foreground px-4 py-3 rounded-md text-sm font-medium transition-colors">
+                    Nuevo Departamento
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-card border border-border rounded-lg p-6">
+            <h3 class="text-lg font-semibold mb-4">Actividad Reciente</h3>
+            <div class="space-y-3">
+                <div class="flex items-center space-x-3">
+                    <div class="h-2 w-2 bg-green-500 rounded-full"></div>
+                    <p class="text-sm">Nueva tarea creada: "Revisar propuesta"</p>
+                    <span class="text-xs text-muted-foreground ml-auto">Hace 2h</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="h-2 w-2 bg-blue-500 rounded-full"></div>
+                    <p class="text-sm">Usuario "María García" se unió</p>
+                    <span class="text-xs text-muted-foreground ml-auto">Hace 4h</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="h-2 w-2 bg-yellow-500 rounded-full"></div>
+                    <p class="text-sm">Tarea "Análisis de datos" completada</p>
+                    <span class="text-xs text-muted-foreground ml-auto">Hace 6h</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="h-2 w-2 bg-primary rounded-full"></div>
+                    <p class="text-sm">Nueva empresa "TechCorp" registrada</p>
+                    <span class="text-xs text-muted-foreground ml-auto">Ayer</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-card border border-border rounded-lg p-6">
+            <h3 class="text-lg font-semibold mb-4">Tareas por Estado</h3>
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="h-3 w-3 bg-green-500 rounded-full"></div>
+                        <span class="text-sm">Completadas</span>
+                    </div>
+                    <span class="text-sm font-medium">12</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="h-3 w-3 bg-yellow-500 rounded-full"></div>
+                        <span class="text-sm">En Progreso</span>
+                    </div>
+                    <span class="text-sm font-medium">8</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="h-3 w-3 bg-red-500 rounded-full"></div>
+                        <span class="text-sm">Pendientes</span>
+                    </div>
+                    <span class="text-sm font-medium">4</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-card border border-border rounded-lg p-6">
+            <h3 class="text-lg font-semibold mb-4">Usuarios por Rol</h3>
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="h-3 w-3 bg-primary rounded-full"></div>
+                        <span class="text-sm">Administradores</span>
+                    </div>
+                    <span class="text-sm font-medium">3</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="h-3 w-3 bg-blue-500 rounded-full"></div>
+                        <span class="text-sm">Managers</span>
+                    </div>
+                    <span class="text-sm font-medium">7</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="h-3 w-3 bg-gray-500 rounded-full"></div>
+                        <span class="text-sm">Usuarios</span>
+                    </div>
+                    <span class="text-sm font-medium">8</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

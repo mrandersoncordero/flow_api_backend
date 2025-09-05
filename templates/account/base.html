@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{% block title %}{% endblock %}</title>
+	<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+
+    {% block extra_css %}
+    {% endblock %}
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-4" style="background-color: oklch(0.145 0 0); color: oklch(0.985 0 0);">
+    <div class="w-full max-w-md">
+        <!-- Logo y título -->
+        <div class="text-center mb-8">
+            <img src="https://task-flow.ahmundo.com/assets/icons/icon.svg" alt="Flow Logo" class="w-16 h-16 mx-auto mb-4 opacity-90">
+            <h1 class="text-3xl font-light tracking-wide mb-2">{% block div_title %}{% endblock %}</h1>
+            <p class="text-sm opacity-70">{% block div_description %}{% endblock %}</p>
+        </div>
+		
+			<div class="rounded-lg p-8 border border-opacity-20" style="background-color: oklch(0.111 0 0); border-color: oklch(0.269 0 0);">
+            {% block content %}
+            {% endblock %}
+			</div>
+		</div>
+	</div>
+
+    {% block extra_js %}
+    {% endblock %}
+</body>
+
+</html>

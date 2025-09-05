@@ -1,0 +1,132 @@
+{% extends 'account/base.html' %}
+{% load static %}
+
+{% block title %}Iniciar sesión{% endblock %}
+
+{% block extra_css %}
+<style>
+  .input-base {
+    /* Si usas Tailwind JIT, puedes conservar @apply. Aquí lo dejo como CSS plano para que siempre funcione */
+    display:block; width:100%;
+    padding:0.75rem 1rem;
+    border:1px solid rgba(255,255,255,.3);
+    border-radius:0.5rem;
+    outline:none; transition: box-shadow .2s, border-color .2s;
+    background-color: oklch(0.269 0 0); color: oklch(0.985 0 0);
+  }
+  .input-base:focus {
+    border-color: oklch(0.588 0.162 252.847);
+    box-shadow: 0 0 0 2px color-mix(in oklch, oklch(0.588 0.162 252.847) 20%, transparent);
+  }
+  .input-error {
+    border-color: oklch(0.65 0.25 30) !important; /* rojo */
+    box-shadow: 0 0 0 2px color-mix(in oklch, oklch(0.65 0.25 30) 20%, transparent) !important;
+  }
+  .help-error {
+    color: oklch(0.7 0.25 30); font-size: .875rem; margin-top: .25rem;
+  }
+  .alert {
+    padding: .75rem 1rem; border-radius: .5rem; margin-bottom: 1rem;
+  }
+  .alert-error { background: color-mix(in oklch, red 15%, transparent); border:1px solid color-mix(in oklch, red 30%, transparent); color: oklch(0.85 0.12 30); }
+  .alert-info { background: color-mix(in oklch, oklch(0.588 0.162 252.847) 12%, transparent); border:1px solid oklch(0.588 0.162 252.847 / .3); color: oklch(0.95 0 0); }
+  .btn-primary {
+    width:100%; padding:.75rem 1rem; border-radius:.5rem; font-weight:600;
+    background-color: oklch(0.588 0.162 252.847); color: oklch(0.985 0 0);
+    transition: opacity .2s, transform .02s;
+  }
+  .btn-primary:hover { opacity:.9; }
+  .btn-primary:active { transform: translateY(1px); }
+  label { display:block; font-size:.9rem; opacity:.9; margin-bottom:.25rem; }
+</style>
+{% endblock %}
+
+{% block div_title %}Flow{% endblock %}
+{% block div_description %}Inicia sesión en tu cuenta{% endblock %}
+
+{% block content %}
+
+{# Mensajes del framework de mensajes #}
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-info{% endif %}">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+
+{# Errores globales del formulario: credenciales inválidas, usuario inactivo, etc. #}
+{% if form.non_field_errors %}
+  <div class="alert alert-error">
+    {% for err in form.non_field_errors %}
+      <div>{{ err }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<form id="loginForm" class="space-y-6" method="post" action="{% url 'account:login' %}">
+  {% csrf_token %}
+  {% if next %}
+    <input type="hidden" name="next" value="{{ next }}">
+  {% endif %}
+
+  <div>
+    <label for="id_username">Nombre de Usuario</label>
+    <input
+      type="text"
+      id="id_username"
+      name="username"
+      required
+      autocomplete="username"
+      value="{{ form.username.value|default_if_none:'' }}"
+      class="input-base {% if form.username.errors %}input-error{% endif %}"
+      placeholder="JhonDae"
+    >
+    {% if form.username.errors %}
+      {% for err in form.username.errors %}
+        <div class="help-error">{{ err }}</div>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  {# Campo password #}
+  <div>
+    <label for="id_password">Contraseña</label>
+    <input
+      type="password"
+      id="id_password"
+      name="password"
+      required
+      autocomplete="current-password"
+      class="input-base {% if form.password.errors %}input-error{% endif %}"
+      placeholder="••••••••"
+    >
+    {% if form.password.errors %}
+      {% for err in form.password.errors %}
+        <div class="help-error">{{ err }}</div>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  <button type="submit" class="btn-primary">Iniciar Sesión</button>
+</form>
+
+{# Opcional: muestra el diccionario completo de errores en desarrollo #}
+{% if form.errors %}
+  <details style="margin-top:1rem;">
+    <summary>Detalles técnicos (solo para desarrollo)</summary>
+    <pre style="white-space: pre-wrap; font-size:.85rem; opacity:.8;">{{ form.errors }}</pre>
+  </details>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Mejora de accesibilidad: enfocar primer campo si hay errores
+  (function() {
+    const errorInput = document.querySelector('.input-error');
+    if (errorInput) { errorInput.focus(); }
+  })();
+</script>
+{% endblock %}

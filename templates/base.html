@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Flow</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- static -->
+    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+</head>
+
+<body class="font-body bg-[#1F1F1F] text-white min-h-screen">
+
+    {% include 'includes/sidebar.html' %}
+    <!-- Main Content -->
+    <main class="ml-64 min-h-screen">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    {% block script_js %}
+    {% endblock %}
+</body>
+
+</html>

@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Header -->
+<header class="bg-[#2A2A2A] border-b border-[#4B5563] p-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="font-heading font-bold text-2xl">Gestión de Tareas</h1>
+            <p class="text-[#6B7280] mt-1">Organiza y gestiona todas tus tareas</p>
+        </div>
+        <button onclick="openTaskModal()"
+            class="bg-[#EA580C] hover:bg-[#D97706] text-white px-6 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
+            <i class="fas fa-plus"></i>
+            Nueva Tarea
+        </button>
+    </div>
+</header>
+
+<!-- Filters and Search -->
+<div class="p-6 bg-[#2A2A2A] border-b border-[#4B5563]">
+    <div class="flex flex-wrap items-center gap-4">
+        <!-- Search -->
+        <div class="relative flex-1 min-w-64">
+            <input type="text" id="searchTasks" placeholder="Buscar tareas..."
+                class="w-full bg-[#1F1F1F] border border-[#4B5563] rounded-lg px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-[#EA580C] focus:border-transparent">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-[#6B7280]"></i>
+        </div>
+
+        <!-- Status Filter -->
+        <select id="statusFilter"
+            class="bg-[#1F1F1F] border border-[#4B5563] rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#EA580C]">
+            <option value="">Todos los estados</option>
+            <option value="pending">Pendiente</option>
+            <option value="progress">En Progreso</option>
+            <option value="completed">Completada</option>
+        </select>
+
+        <!-- Priority Filter -->
+        <select id="priorityFilter"
+            class="bg-[#1F1F1F] border border-[#4B5563] rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#EA580C]">
+            <option value="">Todas las prioridades</option>
+            <option value="high">Alta</option>
+            <option value="medium">Media</option>
+            <option value="low">Baja</option>
+        </select>
+
+        <!-- View Toggle -->
+        <div class="flex bg-[#1F1F1F] border border-[#4B5563] rounded-lg p-1">
+            <button id="gridView" onclick="toggleView('grid')"
+                class="px-3 py-1 rounded text-sm bg-[#EA580C] text-white">
+                <i class="fas fa-th-large"></i>
+            </button>
+            <button id="listView" onclick="toggleView('list')"
+                class="px-3 py-1 rounded text-sm text-[#6B7280] hover:text-white">
+                <i class="fas fa-list"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Petition List -->
+<main class="p-6">
+    <!-- Tasks Grid -->
+    <div id="tasksContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Task Card 1 -->
+        <div class="task-card bg-[#2A2A2A] border border-[#4B5563] rounded-lg p-6 priority-high" data-status="pending"
+            data-priority="high">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex-1">
+                    <h3 class="font-heading font-semibold text-lg mb-2">Implementar autenticación</h3>
+                    <p class="text-[#6B7280] text-sm mb-3">Configurar sistema de login y registro de usuarios con
+                        validación de seguridad.</p>
+                </div>
+                <div class="flex items-center gap-2 ml-4">
+                    <button onclick="editTask(1)" class="text-[#6B7280] hover:text-[#EA580C] transition-colors">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="deleteTask(1)" class="text-[#6B7280] hover:text-red-500 transition-colors">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between mb-4">
+                <span class="status-pending px-3 py-1 rounded-full text-xs font-medium text-[#EA580C]">Pendiente</span>
+                <span class="bg-red-500 bg-opacity-20 text-red-400 px-2 py-1 rounded text-xs font-medium">Alta</span>
+            </div>
+
+            <div class="flex items-center justify-between text-sm text-[#6B7280]">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-user"></i>
+                    <span>Juan Pérez</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-calendar"></i>
+                    <span>15 Dic 2024</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task Card 2 -->
+        <div class="task-card bg-[#2A2A2A] border border-[#4B5563] rounded-lg p-6 priority-medium"
+            data-status="progress" data-priority="medium">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex-1">
+                    <h3 class="font-heading font-semibold text-lg mb-2">Diseño de dashboard</h3>
+                    <p class="text-[#6B7280] text-sm mb-3">Crear mockups y prototipos para la interfaz principal del
+                        sistema.</p>
+                </div>
+                <div class="flex items-center gap-2 ml-4">
+                    <button onclick="editTask(2)" class="text-[#6B7280] hover:text-[#EA580C] transition-colors">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="deleteTask(2)" class="text-[#6B7280] hover:text-red-500 transition-colors">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between mb-4">
+                <span class="status-progress px-3 py-1 rounded-full text-xs font-medium text-blue-400">En
+                    Progreso</span>
+                <span
+                    class="bg-[#EA580C] bg-opacity-20 text-[#EA580C] px-2 py-1 rounded text-xs font-medium">Media</span>
+            </div>
+
+            <div class="flex items-center justify-between text-sm text-[#6B7280] mb-3">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-user"></i>
+                    <span>María García</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-calendar"></i>
+                    <span>20 Dic 2024</span>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="w-full bg-[#1F1F1F] rounded-full h-2">
+                <div class="bg-blue-500 h-2 rounded-full" style="width: 65%"></div>
+            </div>
+            <p class="text-xs text-[#6B7280] mt-1">65% completado</p>
+        </div>
+
+        <!-- Task Card 3 -->
+        <div class="task-card bg-[#2A2A2A] border border-[#4B5563] rounded-lg p-6 priority-low" data-status="completed"
+            data-priority="low">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex-1">
+                    <h3 class="font-heading font-semibold text-lg mb-2">Documentación API</h3>
+                    <p class="text-[#6B7280] text-sm mb-3">Escribir documentación completa para todos los endpoints de
+                        la API.</p>
+                </div>
+                <div class="flex items-center gap-2 ml-4">
+                    <button onclick="editTask(3)" class="text-[#6B7280] hover:text-[#EA580C] transition-colors">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="deleteTask(3)" class="text-[#6B7280] hover:text-red-500 transition-colors">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between mb-4">
+                <span
+                    class="status-completed px-3 py-1 rounded-full text-xs font-medium text-green-400">Completada</span>
+                <span
+                    class="bg-green-500 bg-opacity-20 text-green-400 px-2 py-1 rounded text-xs font-medium">Baja</span>
+            </div>
+
+            <div class="flex items-center justify-between text-sm text-[#6B7280]">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-user"></i>
+                    <span>Carlos López</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-check-circle text-green-500"></i>
+                    <span>Completada</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block script_js %}
+<script>
+    let currentView = 'grid';
+
+    function toggleView(view) {
+        currentView = view;
+        const gridBtn = document.getElementById('gridView');
+        const listBtn = document.getElementById('listView');
+        const container = document.getElementById('tasksContainer');
+
+        if (view === 'grid') {
+            gridBtn.classList.add('bg-[#EA580C]', 'text-white');
+            gridBtn.classList.remove('text-[#6B7280]');
+            listBtn.classList.remove('bg-[#EA580C]', 'text-white');
+            listBtn.classList.add('text-[#6B7280]');
+            container.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+        } else {
+            listBtn.classList.add('bg-[#EA580C]', 'text-white');
+            listBtn.classList.remove('text-[#6B7280]');
+            gridBtn.classList.remove('bg-[#EA580C]', 'text-white');
+            gridBtn.classList.add('text-[#6B7280]');
+            container.className = 'space-y-4';
+        }
+
+        console.log('[v0] View changed to:', view);
+    }
+</script>
+{% endblock %}
