@@ -65,6 +65,7 @@ LOCAL_APPS = [
     "users.apps.UsersConfig",
     "commissions.apps.CommissionsConfig",
     "petitions.apps.PetitionsConfig",
+    "account.apps.AccountConfig",
     "api.apps.ApiConfig",
 ]
 
@@ -203,5 +204,9 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 10,
 }
+
+LOGIN_REDIRECT_URL = "petitions:list"
+LOGIN_URL = "account:login"
+LOGOUT_REDIRECT_URL = "account:logout"
 
 # CSRF_TRUSTED_ORIGINS = ["https://api-task-flow-production.up.railway.app"]
