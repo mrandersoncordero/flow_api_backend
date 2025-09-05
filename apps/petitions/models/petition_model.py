@@ -9,7 +9,6 @@ from utils.main_model import MainModel
 # Models
 from .department_model import Department
 from .company_model import Company
-from commissions.models import Commission
 from users.models.users_model import User
 
 
@@ -46,7 +45,10 @@ class Petition(MainModel, models.Model):
         Department,
         on_delete=models.PROTECT,
         related_name="departments",
-        limit_choices_to={"active": True, "deleted__isnull": True},  # 🔥 Filtrar automáticamente
+        limit_choices_to={
+            "active": True,
+            "deleted__isnull": True,
+        },  # 🔥 Filtrar automáticamente
     )
     company = models.ForeignKey(
         Company,
@@ -59,16 +61,15 @@ class Petition(MainModel, models.Model):
 
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
-    
-    def __str__(self):
-        return f"{self.title} by {self.user}"
 
     class Meta:
         db_table = "petitions"
-        indexes = [
-            models.Index(fields=['active', 'deleted'])
-        ]
+        indexes = [models.Index(fields=["active", "deleted"])]
+        ordering = ["-created"]
 
+    def __str__(self):
+        return f"{self.title} by {self.user}"
+    
     def restore(self):
         """Evita restaurar peticiones finalizadas."""
         if self.status_approval == self.StatusApproval.DONE:
