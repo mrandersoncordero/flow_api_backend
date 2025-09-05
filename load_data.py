@@ -146,14 +146,6 @@ def main():
         },
     ]
 
-    human_resource_data = [
-        {"user": "client1", "department": None, "company": 2},
-        {"user": "client2", "department": None, "company": 2},
-        {"user": "client3", "department": None, "company": 3},
-        {"user": "manager1", "department": 2, "company": 1},
-        {"user": "manager2", "department": 5, "company": 1},
-    ]
-
     # Crear Grupos
     admin_group, _ = Group.objects.get_or_create(name="Admin")
     manager_group, _ = Group.objects.get_or_create(name="Manager")
